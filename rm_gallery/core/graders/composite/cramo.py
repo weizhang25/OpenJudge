@@ -108,7 +108,7 @@ RelativeEvaluationTemplate = PromptTemplate(
 )
 
 
-class Cramo(LLMGrader):
+class CramoGrader(LLMGrader):
     """Cramo grader for evaluation of AI assistant responses.
 
     Implements the CRAMO (Criteria-Aware Relative Evaluation of Model Outputs) approach
@@ -153,7 +153,7 @@ class Cramo(LLMGrader):
         Example:
             >>> from rm_gallery.core.model.dashscope_llm import DashScopeLLM
             >>> model_config = {"model": "qwen-plus"}
-            >>> grader = Cramo(name="cramo_eval", model=model_config)
+            >>> grader = CramoGrader(name="cramo_eval", model=model_config)
             >>> result = await grader.aevaluate(
             ...     query="Explain the process of photosynthesis",
             ...     response="Photosynthesis is a process used by plants..."
