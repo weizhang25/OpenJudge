@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """Unit tests for QwenVLModel."""
-import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pydantic import BaseModel

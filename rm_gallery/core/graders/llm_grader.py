@@ -62,7 +62,6 @@ class LLMGrader(BaseGrader):
         template: str | dict | PromptTemplate | None = None,
         structured_model: Type[BaseModel] | None = None,
         callback: Callable | None = None,
-        rubrics: str = "",
         **kwargs: Any,
     ):
         """Initialize an LLMGrader.
@@ -89,17 +88,10 @@ class LLMGrader(BaseGrader):
                       Can be one of the following:
                       1. A Callable that processes the response and populates metadata
                       2. None, in which case no callback processing is performed
-            rubrics: The rubrics used for evaluation. These guide the LLM on how to perform
-                    the evaluation.
             **kwargs: Additional keyword arguments passed to the parent Grader class and
                      used in the template rendering.
         """
-        super().__init__(
-            name=name,
-            mode=mode,
-            description=description,
-            **kwargs,
-        )
+        super().__init__(name=name, mode=mode, description=description, **kwargs)
 
         # Handle language parameter
         if language is None:
@@ -153,7 +145,6 @@ class LLMGrader(BaseGrader):
             self.model = model
 
         # Store parameters
-        self.rubrics = rubrics
         self.structured_model = structured_model
         self.callback = callback
 
@@ -181,7 +172,7 @@ class LLMGrader(BaseGrader):
             "mode": self.mode.value,
             "description": self.description,
             "template": (self.template.model_dump() if isinstance(self.template, PromptTemplate) else self.template),
-            "rubrics": self.rubrics,
+            **self.kwargs,
         }
 
     @classmethod
@@ -211,7 +202,6 @@ class LLMGrader(BaseGrader):
         # Extract LLMGrader-specific properties
         template = config.pop("template", {})
         model = config.pop("model", {})
-        rubrics = config.pop("rubrics", "")
 
         # Create and return new instance with remaining config items as kwargs
         return cls(
@@ -220,7 +210,6 @@ class LLMGrader(BaseGrader):
             description=description,
             template=template,
             model=model,
-            rubrics=rubrics,
             **config,
         )
 
@@ -272,8 +261,7 @@ class LLMGrader(BaseGrader):
             ...         {"role": "system", "content": "You are a helpful assistant."},
             ...         {"role": "user", "content": "{query}\\n{answer}\\n\\nRate helpfulness:"}
             ...     ],
-            ...     model=DashScopeLLM(model="qwen-plus"),
-            ...     rubrics="Rate the helpfulness of the answer (0.0-1.0)"
+            ...     model=DashScopeLLM(model="qwen-plus")
             ... )
             >>> result = await grader.aevaluate(
             ...     query="How do I make a cake?",
@@ -291,8 +279,7 @@ class LLMGrader(BaseGrader):
             ...         {"role": "user",
             ...          "content": "Query: {query}\\nAnswers:\\n1. {answer_1}\\n2. {answer_2}"}
             ...     ],
-            ...     model=DashScopeLLM(model="qwen-plus"),
-            ...     rubrics="Rank answers by relevance (1 is most relevant)"
+            ...     model=DashScopeLLM(model="qwen-plus")
             ... )
             >>> result = await ranking_grader.aevaluate(
             ...     query="What is the capital of France?",
@@ -303,7 +290,7 @@ class LLMGrader(BaseGrader):
             [1, 2] First answer directly addresses the query while second is tangential
         """
 
-        params = {"rubrics": self.rubrics, **self.kwargs}
+        params = {**self.kwargs}
         params.update(kwargs)
         messages = self.template.format(language=self.language, **params)
         chat_response = await self.model.achat(

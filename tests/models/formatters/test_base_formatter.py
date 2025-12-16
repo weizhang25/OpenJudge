@@ -2,8 +2,7 @@
 """Unit tests for BaseFormatter."""
 import base64
 import os
-import tempfile
-from unittest.mock import mock_open, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -25,7 +24,6 @@ class ConcreteFormatter(BaseFormatter):
 
     async def format(self, *args, **kwargs):
         """Concrete implementation of abstract method."""
-        pass
 
 
 @pytest.mark.unit

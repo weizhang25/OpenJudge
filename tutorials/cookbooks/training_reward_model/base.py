@@ -143,22 +143,18 @@ class BaseTrainDataset(Dataset, ABC):
     @abstractmethod
     def _build_messages(self, example: Dict[str, Any]) -> List[Dict[str, str]]:
         """Build chat messages from example - must be implemented by subclasses"""
-        pass
 
     @abstractmethod
     def _apply_chat_template(self, messages: List[Dict[str, str]]) -> str:
         """Apply chat template - can be overridden by subclasses"""
-        pass
 
     @abstractmethod
     def _extract_ground_truth(self, row_dict: Dict[str, Any]) -> str:
         """Extract ground truth from row data - must be implemented by subclasses"""
-        pass
 
     @abstractmethod
     def _get_data_source(self, row_dict: Dict[str, Any]) -> str:
         """Get data source - can be overridden by subclasses"""
-        pass
 
     def __getitem__(self, item: int) -> Dict[str, Any]:
         """Get an item from dataset"""

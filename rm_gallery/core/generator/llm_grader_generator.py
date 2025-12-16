@@ -66,11 +66,7 @@ class LLMGraderGenerator(BaseGraderGenerator):
         """
         super().__init__(config)
 
-    async def generate(
-        self,
-        dataset: List[dict],
-        **kwargs,
-    ) -> LLMGrader:
+    async def generate(self, dataset: List[dict], **kwargs) -> LLMGrader:
         """
         Generate an LLMGrader based on rubrics created from provided data.
 
@@ -103,18 +99,14 @@ class LLMGraderGenerator(BaseGraderGenerator):
         """
         rubrics = await self._generate_rubrics(dataset, **kwargs)
         return LLMGrader(
-            model=self.config.model,
-            mode=self.config.grader_mode,
-            template=self.config.custom_evaluation_prompt,
+            model=self.config.model,  # type: ignore
+            mode=self.config.grader_mode,  # type: ignore
+            template=self.config.custom_evaluation_prompt,  # type: ignore
             rubrics=rubrics,
         )
 
     @abstractmethod
-    async def _generate_rubrics(
-        self,
-        dataset: List[dict],
-        **kwargs,
-    ) -> str:
+    async def _generate_rubrics(self, dataset: List[dict], **kwargs) -> str:
         """
         Generate rubrics from data.
 

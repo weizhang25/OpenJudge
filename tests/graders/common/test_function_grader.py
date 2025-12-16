@@ -23,8 +23,6 @@ Example:
 """
 
 import asyncio
-from functools import partial
-from unittest.mock import AsyncMock, patch
 
 import pytest
 

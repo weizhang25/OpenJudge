@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the DistributionAnalyzer."""
 
-from unittest.mock import MagicMock
 
 import pytest
 

@@ -27,7 +27,6 @@ Example:
 """
 
 import os
-import time
 from unittest.mock import AsyncMock, patch
 
 import pytest

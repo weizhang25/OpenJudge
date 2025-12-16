@@ -27,8 +27,8 @@ Example:
 """
 
 import os
-from typing import Any, Callable, Dict, List, Tuple, Union
-from unittest.mock import AsyncMock, patch
+from typing import Callable, Dict, Tuple, Union
+from unittest.mock import AsyncMock
 
 import pytest
 
