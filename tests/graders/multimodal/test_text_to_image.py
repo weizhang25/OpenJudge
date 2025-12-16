@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Complete demo test for ImageCoherenceGrader showing unit tests and quality tests.
+Complete demo test for TextToImageGrader showing unit tests and quality tests.
 
 This file demonstrates two types of tests recommended in the GRADER_TESTING_STRATEGY.md
-using ImageCoherenceGrader as an example of LLMGrader:
+using TextToImageGrader as an example of LLMGrader:
 
 1. Unit tests (offline testing with mocks)
 2. Quality tests (evaluation against real data)
@@ -12,17 +12,17 @@ using ImageCoherenceGrader as an example of LLMGrader:
 Example:
     Run all tests:
     ```bash
-    poetry run pytest tests/graders/multimodal/test_image_coherence.py -v
+    poetry run pytest tests/graders/multimodal/test_text_to_image.py -v
     ```
 
     Run only unit tests:
     ```bash
-    poetry run pytest tests/graders/multimodal/test_image_coherence.py -m unit
+    poetry run pytest tests/graders/multimodal/test_text_to_image.py -m unit
     ```
 
     Run quality tests (only if API keys are configured):
     ```bash
-    poetry run pytest tests/graders/multimodal/test_image_coherence.py -m quality
+    poetry run pytest tests/graders/multimodal/test_text_to_image.py -m quality
     ```
 """
 
@@ -39,7 +39,8 @@ from rm_gallery.core.analyzer.validation import (
     FalsePositiveAnalyzer,
 )
 from rm_gallery.core.graders.multimodal._internal import MLLMImage
-from rm_gallery.core.graders.multimodal.image_coherence import ImageCoherenceGrader
+from rm_gallery.core.graders.multimodal.text_to_image import TextToImageGrader
+from rm_gallery.core.models.base_chat_model import BaseChatModel
 from rm_gallery.core.models.openai_chat_model import OpenAIChatModel
 from rm_gallery.core.runner.grading_runner import GraderConfig, GradingRunner
 
@@ -49,69 +50,73 @@ from rm_gallery.core.runner.grading_runner import GraderConfig, GradingRunner
 
 
 @pytest.mark.unit
-class TestImageCoherenceGraderUnit:
-    """Unit tests for ImageCoherenceGrader - testing isolated functionality"""
+class TestTextToImageGraderUnit:
+    """Unit tests for TextToImageGrader - testing isolated functionality"""
 
     def test_initialization(self):
         """Test successful initialization"""
-        mock_model = AsyncMock()
-        grader = ImageCoherenceGrader(model=mock_model)
-        assert grader.name == "image_coherence"
+        # Create a mock that properly inherits from BaseChatModel
+        mock_model = AsyncMock(spec=BaseChatModel)
+        grader = TextToImageGrader(model=mock_model)
+        assert grader.name == "text_to_image"
         assert grader.model == mock_model
 
     @pytest.mark.asyncio
     async def test_successful_evaluation(self):
         """Test successful evaluation with valid inputs"""
 
-        # Create a simple mock response object (not AsyncMock to avoid __aiter__ check)
+        # Create simple mock response objects (not AsyncMock to avoid __aiter__ check)
         class MockResponse:
-            def __init__(self):
-                self.metadata = {
-                    "score": 8.0,  # Will be normalized to 0.8 (divided by 10)
-                    "reason": "Image is highly coherent with surrounding text",
-                }
+            def __init__(self, score, reason):
+                self.metadata = {"score": score, "reason": reason}
 
-        mock_response = MockResponse()
+        # TextToImageGrader calls model twice (semantic + perceptual)
+        mock_semantic = MockResponse(8.0, "Good semantic consistency")
+        mock_perceptual = MockResponse(8.0, "Good perceptual quality")
 
         # Create mock model
-        mock_model = AsyncMock()
-        mock_model.achat = AsyncMock(return_value=mock_response)
+        mock_model = AsyncMock(spec=BaseChatModel)
+        # Return different responses for semantic and perceptual calls
+        mock_model.achat = AsyncMock(side_effect=[mock_semantic, mock_perceptual])
 
-        grader = ImageCoherenceGrader(model=mock_model)
+        grader = TextToImageGrader(model=mock_model)
 
         # Create mock image
         mock_image = MLLMImage(url="test.jpg")
 
         result = await grader.aevaluate(
-            response=["Sales data for Q3:", mock_image, "Shows 20% growth"],
+            query="A cat sitting on a blue sofa",
+            response=mock_image,
         )
 
-        # Assertions
-        assert result.score == 0.8  # Normalized from 8.0
-        assert "coherent" in result.reason.lower()
+        # Assertions - score is geometric mean of (8*8)/10 = sqrt(64)/10 = 0.8
+        assert 0.7 <= result.score <= 0.9  # Allow some tolerance
+        assert len(result.reason) > 0  # Has a reason
 
-        # Verify model was called correctly
-        mock_model.achat.assert_called_once()
+        # Verify model was called twice (semantic + perceptual)
+        assert mock_model.achat.call_count == 2
 
     @pytest.mark.asyncio
     async def test_error_handling(self):
         """Test graceful error handling"""
         # Create mock model that raises exception
-        mock_model = AsyncMock()
+        mock_model = AsyncMock(spec=BaseChatModel)
         mock_model.achat = AsyncMock(side_effect=Exception("API Error"))
 
-        grader = ImageCoherenceGrader(model=mock_model)
+        grader = TextToImageGrader(model=mock_model)
 
         # Create mock image
         mock_image = MLLMImage(url="test.jpg")
 
         result = await grader.aevaluate(
-            response=["Text before", mock_image, "Text after"],
+            query="A dog in a park",
+            response=mock_image,
         )
 
         # Assertions
-        assert result.score == 0.0
-        assert "Evaluation error: API Error" in result.reason
+        # TextToImageGrader returns 0.5 (default) on error, not 0.0
+        assert result.score == 0.5
+        assert "error" in result.reason.lower()
 
 
 # ==================== QUALITY TESTS ====================
@@ -124,13 +129,13 @@ RUN_QUALITY_TESTS = bool(OPENAI_API_KEY and OPENAI_BASE_URL)
 
 # Configure workspace root
 WORKSPACE_ROOT = Path(__file__).parent.parent.parent.parent
-DATA_FILE = WORKSPACE_ROOT / "data" / "pre_data" / "rm-gallery-hug" / "multimodal" / "image_coherence_eval_v1.json"
+DATA_FILE = WORKSPACE_ROOT / "data" / "pre_data" / "rm-gallery-hug" / "multimodal" / "text_to_image_eval_v1.json"
 
 
 @pytest.mark.skipif(not RUN_QUALITY_TESTS, reason="Requires API keys and base URL to run quality tests")
 @pytest.mark.quality
-class TestImageCoherenceGraderQuality:
-    """Quality tests for ImageCoherenceGrader - testing evaluation quality"""
+class TestTextToImageGraderQuality:
+    """Quality tests for TextToImageGrader - testing evaluation quality"""
 
     @pytest.fixture
     def dataset(self):
@@ -161,12 +166,9 @@ class TestImageCoherenceGraderQuality:
             sample = {
                 "query": item["input"]["query"],
                 "image_base64": image_data,
-                "chosen_response": item["chosen"]["response"]["content"],
-                "rejected_response": item["rejected"]["response"]["content"],
                 "chosen_model": item["chosen"]["response"]["model"],
                 "rejected_model": item["rejected"]["response"]["model"],
-                "human_score_chosen": 1,  # Chosen is more coherent
-                "human_score_rejected": 0,  # Rejected is less coherent
+                "human_score": 1,  # Binary: image matches query well
             }
             samples.append(sample)
 
@@ -188,27 +190,26 @@ class TestImageCoherenceGraderQuality:
     async def test_basic_evaluation_with_runner(self, dataset, model):
         """Test the grader's basic evaluation capability"""
         # Create grader with real model
-        grader = ImageCoherenceGrader(model=model)
+        grader = TextToImageGrader(model=model)
 
-        # Custom mapper to construct response with image
-        def map_response_with_image(sample):
+        # Custom mapper to construct query and image response
+        def map_text_to_image(sample):
             query = sample.get("query", "")
             image_base64 = sample.get("image_base64", "")
-            chosen_response = sample.get("chosen_response", "")
 
             # Create MLLMImage from base64
             mllm_image = MLLMImage(base64=image_base64, format="png")
 
-            # Construct multimodal response
             return {
-                "response": [query, mllm_image, chosen_response],
+                "query": query,
+                "response": mllm_image,
             }
 
         # Use custom mapper
         grader_configs = {
-            "image_coherence": GraderConfig(
+            "text_to_image": GraderConfig(
                 grader=grader,
-                mapper=map_response_with_image,
+                mapper=map_text_to_image,
             ),
         }
         runner = GradingRunner(grader_configs=grader_configs)
@@ -217,45 +218,44 @@ class TestImageCoherenceGraderQuality:
         results = await runner.arun(dataset)
 
         # Check that all evaluations completed successfully
-        assert len(results["image_coherence"]) == len(dataset)
+        assert len(results["text_to_image"]) == len(dataset)
 
-        # Check that scores are in valid range (0-1 for image coherence)
-        for result in results["image_coherence"]:
+        # Check that scores are in valid range (0-1 for text_to_image)
+        for result in results["text_to_image"]:
             assert 0 <= result.score <= 1, f"Score out of range: {result.score}"
             assert len(result.reason) > 0, "Reason should not be empty"
 
         # Verify analysis results structure
-        assert "image_coherence" in results
+        assert "text_to_image" in results
 
     @pytest.mark.asyncio
     async def test_consistency_with_runner(self, dataset, model):
         """Test grader evaluation consistency"""
         # Create grader with real model
-        grader = ImageCoherenceGrader(model=model)
+        grader = TextToImageGrader(model=model)
 
-        # Custom mapper to construct response with image
-        def map_response_with_image(sample):
+        # Custom mapper to construct query and image response
+        def map_text_to_image(sample):
             query = sample.get("query", "")
             image_base64 = sample.get("image_base64", "")
-            chosen_response = sample.get("chosen_response", "")
 
             # Create MLLMImage from base64
             mllm_image = MLLMImage(base64=image_base64, format="png")
 
-            # Construct multimodal response
             return {
-                "response": [query, mllm_image, chosen_response],
+                "query": query,
+                "response": mllm_image,
             }
 
         # Use duplicate configuration to implement consistency testing
         grader_configs = {
-            "image_coherence_run1": GraderConfig(
+            "text_to_image_run1": GraderConfig(
                 grader=grader,
-                mapper=map_response_with_image,
+                mapper=map_text_to_image,
             ),
-            "image_coherence_run2": GraderConfig(
+            "text_to_image_run2": GraderConfig(
                 grader=grader,
-                mapper=map_response_with_image,
+                mapper=map_text_to_image,
             ),
         }
         runner = GradingRunner(grader_configs=grader_configs)
@@ -266,8 +266,8 @@ class TestImageCoherenceGraderQuality:
         # Use ConsistencyAnalyzer to calculate consistency metrics
         consistency_analyzer = ConsistencyAnalyzer()
         consistency_result = consistency_analyzer.analyze(
-            first_run_results=results["image_coherence_run1"],
-            second_run_results=results["image_coherence_run2"],
+            first_run_results=results["text_to_image_run1"],
+            second_run_results=results["text_to_image_run2"],
         )
 
         # Assert that consistency metrics meet expected thresholds
@@ -285,8 +285,8 @@ class TestImageCoherenceGraderQuality:
 
 @pytest.mark.skipif(not RUN_QUALITY_TESTS, reason="Requires API keys and base URL to run quality tests")
 @pytest.mark.quality
-class TestImageCoherenceGraderAdversarial:
-    """Adversarial tests for ImageCoherenceGrader - testing robustness"""
+class TestTextToImageGraderAdversarial:
+    """Adversarial tests for TextToImageGrader - testing robustness"""
 
     @pytest.fixture
     def dataset(self):
@@ -299,30 +299,37 @@ class TestImageCoherenceGraderAdversarial:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        # Transform to test format with coherent and incoherent pairs
+        # Transform to test format with chosen (better) and rejected (worse) pairs
         samples = []
         for item in data:
-            # Extract image from media_contents
-            media_contents = item["input"].get("media_contents", [])
-            image_data = None
-            if media_contents:
-                for media in media_contents:
+            # Extract chosen image
+            chosen_media = item.get("chosen", {}).get("response", {}).get("media_contents", [])
+            chosen_image_data = None
+            if chosen_media:
+                for media in chosen_media:
                     if media["type"] == "image":
-                        image_data = media["content"]["image"]["data"]
+                        chosen_image_data = media["content"]["image"]["data"]
                         break
 
-            if not image_data:
-                continue
+            # Extract rejected image
+            rejected_media = item.get("rejected", {}).get("response", {}).get("media_contents", [])
+            rejected_image_data = None
+            if rejected_media:
+                for media in rejected_media:
+                    if media["type"] == "image":
+                        rejected_image_data = media["content"]["image"]["data"]
+                        break
 
-            sample = {
-                "query": item["input"]["query"],
-                "image_base64": image_data,
-                "coherent_response": item["chosen"]["response"]["content"],
-                "incoherent_response": item["rejected"]["response"]["content"],
-                "coherent_label": 1,
-                "incoherent_label": 0,
-            }
-            samples.append(sample)
+            # Only include samples that have both images
+            if chosen_image_data and rejected_image_data:
+                sample = {
+                    "query": item["input"]["query"],
+                    "chosen_image_base64": chosen_image_data,
+                    "rejected_image_base64": rejected_image_data,
+                    "chosen_label": 1,
+                    "rejected_label": 0,
+                }
+                samples.append(sample)
 
         return samples  # Use all samples for comprehensive testing
 
@@ -338,35 +345,33 @@ class TestImageCoherenceGraderAdversarial:
             raise RuntimeError("No API key configured")
 
     @pytest.mark.asyncio
-    async def test_adversarial_image_coherence_with_runner(self, dataset, model):
+    async def test_adversarial_text_to_image_with_runner(self, dataset, model):
         """Test the grader's ability to identify adversarial examples"""
         # Create grader with real model
-        grader = ImageCoherenceGrader(model=model)
+        grader = TextToImageGrader(model=model)
 
-        # Custom mappers for coherent and incoherent responses
-        def map_coherent_response(sample):
+        # Custom mappers for chosen and rejected images
+        def map_chosen_image(sample):
             query = sample.get("query", "")
-            image_base64 = sample.get("image_base64", "")
-            coherent_response = sample.get("coherent_response", "")
-            mllm_image = MLLMImage(base64=image_base64, format="png")
-            return {"response": [query, mllm_image, coherent_response]}
+            chosen_image_base64 = sample.get("chosen_image_base64", "")
+            mllm_image = MLLMImage(base64=chosen_image_base64, format="png")
+            return {"query": query, "response": mllm_image}
 
-        def map_incoherent_response(sample):
+        def map_rejected_image(sample):
             query = sample.get("query", "")
-            image_base64 = sample.get("image_base64", "")
-            incoherent_response = sample.get("incoherent_response", "")
-            mllm_image = MLLMImage(base64=image_base64, format="png")
-            return {"response": [query, mllm_image, incoherent_response]}
+            rejected_image_base64 = sample.get("rejected_image_base64", "")
+            mllm_image = MLLMImage(base64=rejected_image_base64, format="png")
+            return {"query": query, "response": mllm_image}
 
-        # Configure GraderConfig to evaluate both coherent and incoherent responses
+        # Configure GraderConfig to evaluate both chosen and rejected images
         grader_configs = {
-            "image_coherence_coherent": GraderConfig(
+            "text_to_image_chosen": GraderConfig(
                 grader=grader,
-                mapper=map_coherent_response,
+                mapper=map_chosen_image,
             ),
-            "image_coherence_incoherent": GraderConfig(
+            "text_to_image_rejected": GraderConfig(
                 grader=grader,
-                mapper=map_incoherent_response,
+                mapper=map_rejected_image,
             ),
         }
         runner = GradingRunner(grader_configs=grader_configs)
@@ -374,32 +379,32 @@ class TestImageCoherenceGraderAdversarial:
         # Use Runner to perform batch evaluation
         results = await runner.arun(dataset)
 
-        # Use FalsePositiveAnalyzer for incoherent responses
+        # Use FalsePositiveAnalyzer for rejected images
         fp_analyzer = FalsePositiveAnalyzer()
         fp_result = fp_analyzer.analyze(
             dataset=dataset,
-            grader_results=results["image_coherence_incoherent"],
-            label_path="incoherent_label",
+            grader_results=results["text_to_image_rejected"],
+            label_path="rejected_label",
         )
 
-        # Use FalseNegativeAnalyzer for coherent responses
+        # Use FalseNegativeAnalyzer for chosen images
         fn_analyzer = FalseNegativeAnalyzer()
         fn_result = fn_analyzer.analyze(
             dataset=dataset,
-            grader_results=results["image_coherence_coherent"],
-            label_path="coherent_label",
+            grader_results=results["text_to_image_chosen"],
+            label_path="chosen_label",
         )
 
-        # Calculate pairwise accuracy: coherent should score higher than incoherent
+        # Calculate pairwise accuracy: chosen should score higher than rejected
         correct_predictions = 0
         total_predictions = 0
 
-        for i, (coherent_result, incoherent_result) in enumerate(
-            zip(results["image_coherence_coherent"], results["image_coherence_incoherent"]),
+        for i, (chosen_result, rejected_result) in enumerate(
+            zip(results["text_to_image_chosen"], results["text_to_image_rejected"]),
         ):
-            if coherent_result and incoherent_result:
-                # Coherent should have higher score than incoherent
-                if coherent_result.score > incoherent_result.score:
+            if chosen_result and rejected_result:
+                # Chosen should have higher score than rejected
+                if chosen_result.score > rejected_result.score:
                     correct_predictions += 1
                 total_predictions += 1
 
@@ -408,7 +413,7 @@ class TestImageCoherenceGraderAdversarial:
         # Print accuracy for reporting
         print(f"\n{'='*60}")
         print(
-            f"ImageCoherenceGrader Pairwise Accuracy: {pairwise_accuracy:.4f} ({correct_predictions}/{total_predictions})"
+            f"TextToImageGrader Pairwise Accuracy: {pairwise_accuracy:.4f} ({correct_predictions}/{total_predictions})"
         )
         print(f"{'='*60}\n")
 
