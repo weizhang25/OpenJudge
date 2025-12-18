@@ -14,7 +14,7 @@ theme:
     - content.code.copy
     - content.code.annotate
 nav:
-  - Home: index.md
+  - Overview: index.md
 
   - Get Started:
       - Introduction: get-started/introduction.md
@@ -115,6 +115,7 @@ markdown_extensions:
 
 extra_css:
   - https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap
+  - stylesheets/feature-cards.css
   - stylesheets/tabbed-code.css
   - stylesheets/readability-enhancements.css
   - stylesheets/code-enhancements.css
