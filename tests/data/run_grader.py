@@ -7,6 +7,7 @@ import nest_asyncio
 
 from rm_gallery.core.graders.agent import *
 from rm_gallery.core.graders.common import *
+from rm_gallery.core.graders.llm_grader import LLMGrader
 from rm_gallery.core.models.schema.prompt_template import LanguageEnum
 
 nest_asyncio.apply()
@@ -35,7 +36,11 @@ def run_cases(case_file: str, skip: int, id: int):
             index = case["index"]
 
             try:
-                grader = eval(cls_name)(model=model_config, language=LanguageEnum.ZH)
+                cls_type = eval(cls_name)
+                if isinstance(cls_type, type) and issubclass(cls_type, LLMGrader):
+                    grader = cls_type(model=model_config, language=LanguageEnum.ZH)
+                else:
+                    grader = cls_type()
                 result = asyncio.run(grader.aevaluate(**kwargs))
 
                 has_min = "min_expect_score" in case

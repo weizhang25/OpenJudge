@@ -52,6 +52,7 @@ class ObservationInformationGainGrader(BaseGrader):
         Returns:
             GraderScore: Information gain score with details
         """
+        messages = [msg.get("message", msg) for msg in messages]
         action_obs_pairs = extract_action_observation_pairs(messages)
         if not action_obs_pairs:
             reason = "No action-observation pairs found - unable to evaluate information gain"

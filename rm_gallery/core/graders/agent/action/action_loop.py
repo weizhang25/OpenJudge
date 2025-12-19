@@ -64,6 +64,7 @@ class ActionLoopDetectionGrader(BaseGrader):
             ... )
             >>> print(f"Loop detection score: {result.score}")
         """
+        messages = [msg.get("message", msg) for msg in messages]
         action_obs_pairs = extract_action_observation_pairs(messages)
         # Extract action signatures (function name + key arguments)
         action_signatures = []

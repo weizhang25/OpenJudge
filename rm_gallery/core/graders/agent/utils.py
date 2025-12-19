@@ -48,6 +48,7 @@ def extract_action_observation_pairs(
         if role == "assistant" and tool_calls:
             # Store tool calls indexed by their ID
             for tool_call in tool_calls:
+                tool_call = tool_call.get("tool_call", tool_call)
                 tool_call_id = tool_call.get("id")
                 if tool_call_id:
                     pending_actions[tool_call_id] = tool_call
