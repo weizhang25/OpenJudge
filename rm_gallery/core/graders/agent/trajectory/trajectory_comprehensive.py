@@ -326,10 +326,10 @@ class TrajectoryComprehensiveGrader(LLMGrader):
         """
 
         def callback(response: ChatResponse) -> Dict[str, Any]:
-            # Extract step_evaluations from ChatResponse.metadata
-            # metadata contains the model_dump() of TrajectoryEvaluationOutput
-            metadata = response.metadata or {}
-            step_evaluations_raw = metadata.get("step_evaluations", [])
+            # Extract step_evaluations from ChatResponse.parsed
+            # parsed contains the model_dump() of TrajectoryEvaluationOutput
+            parsed = response.parsed or {}
+            step_evaluations_raw = parsed.get("step_evaluations", [])
 
             # Convert dict representations to StepEvaluation objects
             # Note: structured_model ensures all items are dicts from model_dump()
@@ -395,7 +395,7 @@ class TrajectoryComprehensiveGrader(LLMGrader):
         self,
         model: Union[BaseChatModel, dict],
         template: Optional[PromptTemplate] = DEFAULT_TRAJECTORY_COMPREHENSIVE_TEMPLATE,
-        language: LanguageEnum = LanguageEnum.ZH,
+        language: LanguageEnum = LanguageEnum.EN,
         resolution_threshold: float = 0.8,
     ):
         """

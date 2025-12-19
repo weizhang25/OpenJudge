@@ -10,6 +10,22 @@ Demonstrates workflow:
 3. Evaluate test data using the response grader (without labels)
 
 Supports pointwise and listwise evaluation modes.
+
+Example:
+    Run all tests:
+    ```bash
+    pytest tests/generator/test_iterative_rubric.py -v
+    ```
+
+    Run a specific test:
+    ```bash
+    pytest tests/generator/test_iterative_rubric.py::test_iterative_grader_pointwise_without_categorization -v
+    ```
+
+    Run directly as a script:
+    ```bash
+    python tests/generator/test_iterative_rubric.py
+    ```
 """
 
 import asyncio
