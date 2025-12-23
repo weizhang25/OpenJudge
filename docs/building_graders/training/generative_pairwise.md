@@ -8,18 +8,18 @@ Train reward models to generate comparative evaluations between two responses us
 
 Generative pairwise training uses **Group Relative Policy Optimization (GRPO)** to train language models to compare two responses and output structured preference decisions. Unlike Bradley-Terry which learns implicit rankings, pairwise training generates explicit reasoning.
 
-**When to use:**
-- You have labeled comparison data (A vs B preferences)
-- Need explainable preference decisions with reasoning
-- Building judges for human preference alignment
-- Want natural language feedback alongside preferences
+!!! tip "When to use Generative Pairwise"
+    - You have labeled comparison data (A vs B preferences)
+    - Need explainable preference decisions with reasoning
+    - Building judges for human preference alignment
+    - Want natural language feedback alongside preferences
 
 **Training approach:**
 
 The model generates preference analysis and receives binary rewards:
 
 \[
-\text{reward} =
+\text{reward} = 
 \begin{cases}
 1.0 & \text{if predicted = true preference} \\
 0.0 & \text{otherwise}
@@ -64,95 +64,96 @@ Pairwise training expects Parquet files with:
 
 ### Preference Labels
 
-- **"A"**: First response is better
-- **"B"**: Second response is better
-- **"tie"**: Both responses are equal quality
+!!! info "Label Options"
+    - **"A"**: First response is better
+    - **"B"**: Second response is better
+    - **"tie"**: Both responses are equal quality
 
 ---
 
 ## Data Preparation
 
-### Option 1: Convert from HelpSteer2
+=== "Option 1: Convert from HelpSteer2"
 
-```python
-from datasets import load_dataset
-import pandas as pd
+    ```python
+    from datasets import load_dataset
+    import pandas as pd
 
-dataset = load_dataset("nvidia/HelpSteer2")
+    dataset = load_dataset("nvidia/HelpSteer2")
 
-def convert_to_pairwise(examples, threshold=1.0):
-    """Create pairwise comparisons from scored examples"""
-    pairwise_data = []
+    def convert_to_pairwise(examples, threshold=1.0):
+        """Create pairwise comparisons from scored examples"""
+        pairwise_data = []
+        
+        # Group by prompt
+        prompts = {}
+        for ex in examples:
+            prompt = ex["prompt"]
+            if prompt not in prompts:
+                prompts[prompt] = []
+            prompts[prompt].append(ex)
+        
+        # Create pairs
+        for prompt, responses in prompts.items():
+            if len(responses) < 2:
+                continue
+            
+            # Compare first two responses
+            r1, r2 = responses[0], responses[1]
+            score_diff = r1["helpfulness"] - r2["helpfulness"]
+            
+            if abs(score_diff) < 0.5:
+                preferred = "tie"
+                strength = 0
+            elif score_diff > 0:
+                preferred = "A"
+                strength = 1 if abs(score_diff) < threshold else 2
+            else:
+                preferred = "B"
+                strength = 1 if abs(score_diff) < threshold else 2
+            
+            pairwise_data.append({
+                "input": [{"role": "user", "content": prompt}],
+                "output": [
+                    {"content": r1["response"]},
+                    {"content": r2["response"]}
+                ],
+                "metadata": {
+                    "preferred": preferred,
+                    "preference_strength": strength
+                }
+            })
+        
+        return pairwise_data
 
-    # Group by prompt
-    prompts = {}
-    for ex in examples:
-        prompt = ex["prompt"]
-        if prompt not in prompts:
-            prompts[prompt] = []
-        prompts[prompt].append(ex)
+    train_data = convert_to_pairwise(dataset["train"])
+    test_data = convert_to_pairwise(dataset["test"])
 
-    # Create pairs
-    for prompt, responses in prompts.items():
-        if len(responses) < 2:
-            continue
+    pd.DataFrame(train_data).to_parquet("./data/pairwise_train.parquet")
+    pd.DataFrame(test_data).to_parquet("./data/pairwise_test.parquet")
+    ```
 
-        # Compare first two responses
-        r1, r2 = responses[0], responses[1]
-        score_diff = r1["helpfulness"] - r2["helpfulness"]
+=== "Option 2: From Human Preferences"
 
-        if abs(score_diff) < 0.5:
-            preferred = "tie"
-            strength = 0
-        elif score_diff > 0:
-            preferred = "A"
-            strength = 1 if abs(score_diff) < threshold else 2
-        else:
-            preferred = "B"
-            strength = 1 if abs(score_diff) < threshold else 2
+    ```python
+    import pandas as pd
 
-        pairwise_data.append({
-            "input": [{"role": "user", "content": prompt}],
+    # Your annotated preference data
+    preferences = [
+        {
+            "input": [{"role": "user", "content": "Explain quantum computing"}],
             "output": [
-                {"content": r1["response"]},
-                {"content": r2["response"]}
+                {"content": "Detailed technical explanation..."},
+                {"content": "Simple but incomplete explanation..."}
             ],
-            "metadata": {
-                "preferred": preferred,
-                "preference_strength": strength
-            }
-        })
+            "metadata": {"preferred": "A", "preference_strength": 2}
+        },
+        # More examples...
+    ]
 
-    return pairwise_data
-
-train_data = convert_to_pairwise(dataset["train"])
-test_data = convert_to_pairwise(dataset["test"])
-
-pd.DataFrame(train_data).to_parquet("./data/pairwise_train.parquet")
-pd.DataFrame(test_data).to_parquet("./data/pairwise_test.parquet")
-```
-
-### Option 2: From Human Preferences
-
-```python
-import pandas as pd
-
-# Your annotated preference data
-preferences = [
-    {
-        "input": [{"role": "user", "content": "Explain quantum computing"}],
-        "output": [
-            {"content": "Detailed technical explanation..."},
-            {"content": "Simple but incomplete explanation..."}
-        ],
-        "metadata": {"preferred": "A", "preference_strength": 2}
-    },
-    # More examples...
-]
-
-df = pd.DataFrame(preferences)
-df.to_parquet("./data/custom_pairwise.parquet")
-```
+    df = pd.DataFrame(preferences)
+    df.to_parquet("./data/custom_pairwise.parquet")
+    ```
 
 ---
 
@@ -173,17 +174,17 @@ class HelpfulnessPairwiseTrainDataset(BaseTrainDataset):
         """Build comparison prompt"""
         input_messages = example.get('input', [])
         output_data = example.get('output', [])
-
+        
         # Extract query
         query = input_messages[0]['content'] if input_messages else ""
-
+        
         # Extract two responses
         if len(output_data) >= 2:
             response_a = output_data[0].get('content', '')
             response_b = output_data[1].get('content', '')
         else:
             response_a = response_b = ""
-
+        
         # Build comparison prompt
         prompt = f"""Compare these two responses to the query and determine which is better.
 
@@ -202,27 +203,27 @@ Provide your evaluation in this format:
 <preference>A or B or tie</preference>"""
 
         return [{"role": "user", "content": prompt}]
-
+    
     def _apply_chat_template(self, messages: List[Dict[str, str]]) -> str:
         return self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
             add_generation_prompt=True
         )
-
+    
     def _extract_ground_truth(self, row_dict: Dict[str, Any]) -> str:
         """Extract preference label"""
         metadata = row_dict.get('metadata', {})
-
+        
         # Handle JSON string metadata
         if isinstance(metadata, str):
             try:
                 metadata = json.loads(metadata)
             except (json.JSONDecodeError, ValueError):
                 metadata = {}
-
+        
         return metadata.get('preferred', 'tie')
-
+    
     def _get_data_source(self, row_dict: Dict[str, Any]) -> str:
         return row_dict.get('data_source', 'unknown')
 ```
@@ -240,18 +241,18 @@ def extract_preference_from_response(response_text: str) -> str:
     """Extract preference decision from model output"""
     if not isinstance(response_text, str):
         response_text = str(response_text)
-
+    
     # Parse using template
     try:
         parsed = PairwiseComparisonTemplate.parse(response_text)
         return parsed.preference or "unknown"
     except Exception:
         pass
-
+    
     # Fallback: Extract from XML tags
     pattern = r"<preference>(.*?)</preference>"
     match = re.search(pattern, response_text, re.DOTALL | re.IGNORECASE)
-
+    
     if match:
         preference = match.group(1).strip().upper()
         if preference == "A" or "RESPONSE A" in preference:
@@ -260,7 +261,7 @@ def extract_preference_from_response(response_text: str) -> str:
             return "B"
         elif "TIE" in preference or "EQUAL" in preference:
             return "tie"
-
+    
     return "unknown"
 
 def calculate_pairwise_reward(
@@ -270,7 +271,7 @@ def calculate_pairwise_reward(
     """Calculate binary reward for preference prediction"""
     if true_preference is None or predicted_preference == "unknown":
         return 0.0
-
+    
     return 1.0 if predicted_preference == true_preference else 0.0
 
 def compute_score(
@@ -284,30 +285,30 @@ def compute_score(
     try:
         # Extract predicted preference
         predicted_preference = extract_preference_from_response(solution_str)
-
+        
         # Extract true preference from metadata
         true_preference = "tie"
         preference_strength = 0
-
+        
         if extra_info and isinstance(extra_info, dict):
             metadata = extra_info.get("metadata", {})
-
+            
             # Handle JSON string
             if isinstance(metadata, str):
                 try:
                     metadata = json.loads(metadata)
                 except (json.JSONDecodeError, ValueError):
                     metadata = {}
-
+            
             if isinstance(metadata, dict):
                 true_preference = metadata.get("preferred", "tie")
                 preference_strength = metadata.get("preference_strength", 0)
-
+        
         # Calculate reward
         reward = calculate_pairwise_reward(predicted_preference, true_preference)
-        accuracy = 1.0 if (predicted_preference == true_preference and
+        accuracy = 1.0 if (predicted_preference == true_preference and 
                           predicted_preference != "unknown") else 0.0
-
+        
         return {
             "score": reward,
             "predicted_preference": predicted_preference,
@@ -317,7 +318,7 @@ def compute_score(
             "task_type": "pairwise",
             "data_source": data_source
         }
-
+    
     except Exception as exc:
         return {
             "score": 0.0,
@@ -340,7 +341,7 @@ from pydantic import BaseModel, Field
 
 class PairwiseComparisonTemplate(BaseModel):
     """Template for pairwise comparison parsing"""
-
+    
     analysis: Optional[str] = Field(
         default=None,
         description="Explanation of the comparison"
@@ -349,18 +350,18 @@ class PairwiseComparisonTemplate(BaseModel):
         default=None,
         description="Preference decision: A, B, or tie"
     )
-
+    
     @classmethod
     def parse(cls, text: str) -> "PairwiseComparisonTemplate":
         """Extract analysis and preference from output"""
         contents = {}
-
+        
         # Extract analysis
         analysis_pattern = r"<analysis>(.*?)</analysis>"
         match = re.search(analysis_pattern, text, re.DOTALL | re.IGNORECASE)
         if match:
             contents["analysis"] = match.group(1).strip()
-
+        
         # Extract preference
         pref_pattern = r"<preference>(.*?)</preference>"
         match = re.search(pref_pattern, text, re.DOTALL | re.IGNORECASE)
@@ -372,7 +373,7 @@ class PairwiseComparisonTemplate(BaseModel):
                 contents["preference"] = "B"
             elif "TIE" in pref:
                 contents["preference"] = "tie"
-
+        
         return cls(**contents)
 ```
 
@@ -485,11 +486,12 @@ Track during training:
 
 ### Expected Progress
 
-```
-Epoch 0.1: reward ~0.35, accuracy ~45%
-Epoch 0.5: reward ~0.70, accuracy ~75%
-Epoch 1.0: reward ~0.85, accuracy ~85%
-```
+!!! example "Typical Training Progress"
+    ```
+    Epoch 0.1: reward ~0.35, accuracy ~45%
+    Epoch 0.5: reward ~0.70, accuracy ~75%
+    Epoch 1.0: reward ~0.85, accuracy ~85%
+    ```
 
 ### Analysis
 
@@ -502,12 +504,14 @@ results = pd.read_csv("validation_results.csv")
 # Group by preference strength
 by_strength = results.groupby('preference_strength')['accuracy'].mean()
 print(by_strength)
-
-# Strong preferences should have higher accuracy
-# Strength 0 (tie): ~60%
-# Strength 1 (weak): ~75%
-# Strength 2 (strong): ~90%
 ```
+
+!!! note "Expected Accuracy by Preference Strength"
+    Strong preferences should have higher accuracy:
+    
+    - Strength 0 (tie): ~60%
+    - Strength 1 (weak): ~75%
+    - Strength 2 (strong): ~90%
 
 ---
 
@@ -573,12 +577,12 @@ Account for preference strength in rewards:
 def calculate_weighted_reward(predicted, true, strength):
     """Weight reward by preference strength"""
     base_reward = 1.0 if predicted == true else 0.0
-
+    
     # Strong preferences (strength=2) get full weight
     # Weak preferences (strength=1) get reduced weight
     # Ties (strength=0) get minimal weight
     weight = 1.0 if strength == 2 else (0.7 if strength == 1 else 0.3)
-
+    
     return base_reward * weight
 ```
 
@@ -611,8 +615,8 @@ class ConfidentPairwiseTemplate(BaseModel):
 
 ## Next Steps
 
-- [Generative Pointwise](generative-pointwise.md) — Train with absolute scores
-- [Bradley-Terry Training](bradley-terry.md) — Implicit ranking approach
+- [Generative Pointwise](generative_pointwise.md) — Train with absolute scores
+- [Bradley-Terry Training](bradley_terry.md) — Implicit ranking approach
 - [SFT for Reward Models](sft.md) — Initialize with supervised learning
 - [Training Overview](overview.md) — Compare all methods
 

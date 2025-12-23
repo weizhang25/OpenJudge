@@ -8,11 +8,11 @@ Train reward models using Bradley-Terry loss on preference pairs. This approach 
 
 Bradley-Terry training is the **simplest and most widely used** method for reward model training. It works with binary preference data (chosen vs. rejected) and optimizes the model to predict which response humans prefer.
 
-**When to use:**
-- You have preference pairs (e.g., from RLHF annotation)
-- Binary comparison data (response A better than response B)
-- Want a simple, stable training process
-- Need a model that outputs scalar reward scores
+!!! tip "When to use Bradley-Terry"
+    - You have preference pairs (e.g., from RLHF annotation)
+    - Binary comparison data (response A better than response B)
+    - Want a simple, stable training process
+    - Need a model that outputs scalar reward scores
 
 **Training objective:**
 
@@ -48,45 +48,45 @@ Bradley-Terry training expects Parquet files with two columns:
 
 ### Data Preparation
 
-**Option 1: Use existing datasets**
+=== "Option 1: Use existing datasets"
 
-```python
-# HuggingFace datasets with preference pairs
-# Example: hendrydong/preference_700K
-TRAIN_FILE=hendrydong/preference_700K/train.parquet
-VAL_FILE=hendrydong/preference_700K/test.parquet
-```
+    ```bash
+    # HuggingFace datasets with preference pairs
+    # Example: hendrydong/preference_700K
+    TRAIN_FILE=hendrydong/preference_700K/train.parquet
+    VAL_FILE=hendrydong/preference_700K/test.parquet
+    ```
 
-**Option 2: Convert from RM-Gallery evaluation data**
+=== "Option 2: Convert from RM-Gallery evaluation data"
 
-```python
-import pandas as pd
-from rm_gallery.core.generator import export_data
+    ```python
+    import pandas as pd
+    from rm_gallery.core.generator import export_data
 
-# Create preference pairs from scored data
-def create_preference_pairs(eval_cases):
-    pairs = []
-    for case in eval_cases:
-        # Assuming cases have response_a, response_b with scores
-        if case['score_a'] > case['score_b']:
-            pairs.append({
-                'chosen': case['response_a'],
-                'rejected': case['response_b']
-            })
-        elif case['score_b'] > case['score_a']:
-            pairs.append({
-                'chosen': case['response_b'],
-                'rejected': case['response_a']
-            })
-    return pairs
+    # Create preference pairs from scored data
+    def create_preference_pairs(eval_cases):
+        pairs = []
+        for case in eval_cases:
+            # Assuming cases have response_a, response_b with scores
+            if case['score_a'] > case['score_b']:
+                pairs.append({
+                    'chosen': case['response_a'],
+                    'rejected': case['response_b']
+                })
+            elif case['score_b'] > case['score_a']:
+                pairs.append({
+                    'chosen': case['response_b'],
+                    'rejected': case['response_a']
+                })
+        return pairs
 
-# Export to parquet
-df_train = pd.DataFrame(create_preference_pairs(train_data))
-df_train.to_parquet('./data/bt_train.parquet')
+    # Export to parquet
+    df_train = pd.DataFrame(create_preference_pairs(train_data))
+    df_train.to_parquet('./data/bt_train.parquet')
 
-df_val = pd.DataFrame(create_preference_pairs(val_data))
-df_val.to_parquet('./data/bt_val.parquet')
-```
+    df_val = pd.DataFrame(create_preference_pairs(val_data))
+    df_val.to_parquet('./data/bt_val.parquet')
+    ```
 
 ---
 
@@ -135,38 +135,38 @@ trainer:
 
 ### 2. Launch Training Script
 
-**Single-node, multi-GPU:**
+=== "Single-node, multi-GPU"
 
-```bash
-cd tutorials/cookbooks/training_reward_model/bradley-terry
+    ```bash
+    cd tutorials/cookbooks/training_reward_model/bradley_terry
 
-# Edit run_bt.sh with your configuration
-export N_GPUS_PER_NODE=8
+    # Edit run_bt.sh with your configuration
+    export N_GPUS_PER_NODE=8
 
-bash run_bt.sh
-```
+    bash run_bt.sh
+    ```
 
-**Multi-node setup:**
+=== "Multi-node setup"
 
-```bash
-# On master node (NODE_RANK=0)
-export MASTER_ADDR=192.168.1.10
-export MASTER_PORT=29500
-export NNODES=4
-export NODE_RANK=0
-export N_GPUS_PER_NODE=8
+    ```bash
+    # On master node (NODE_RANK=0)
+    export MASTER_ADDR=192.168.1.10
+    export MASTER_PORT=29500
+    export NNODES=4
+    export NODE_RANK=0
+    export N_GPUS_PER_NODE=8
 
-bash run_bt.sh
+    bash run_bt.sh
 
-# On worker nodes (NODE_RANK=1,2,3...)
-export MASTER_ADDR=192.168.1.10
-export MASTER_PORT=29500
-export NNODES=4
-export NODE_RANK=1  # Change for each node
-export N_GPUS_PER_NODE=8
+    # On worker nodes (NODE_RANK=1,2,3...)
+    export MASTER_ADDR=192.168.1.10
+    export MASTER_PORT=29500
+    export NNODES=4
+    export NODE_RANK=1  # Change for each node
+    export N_GPUS_PER_NODE=8
 
-bash run_bt.sh
-```
+    bash run_bt.sh
+    ```
 
 ---
 
@@ -299,13 +299,14 @@ Bradley-Terry training tracks:
 
 ### Expected Training Curve
 
-```
-Epoch 1: loss ~0.6, accuracy ~65%
-Epoch 2: loss ~0.4, accuracy ~75%
-Epoch 3: loss ~0.3, accuracy ~80%
-```
-
-Higher accuracy indicates the model correctly predicts human preferences.
+!!! example "Typical Training Progress"
+    ```
+    Epoch 1: loss ~0.6, accuracy ~65%
+    Epoch 2: loss ~0.4, accuracy ~75%
+    Epoch 3: loss ~0.3, accuracy ~80%
+    ```
+    
+    Higher accuracy indicates the model correctly predicts human preferences.
 
 ### Logging to WandB/SwanLab
 
@@ -364,50 +365,50 @@ results = await runner.arun(your_dataset)
 
 ## Advanced Configuration
 
-### FSDP2 (PyTorch >= 2.4)
+=== "FSDP2 (PyTorch >= 2.4)"
 
-For better performance with newer PyTorch:
+    For better performance with newer PyTorch:
 
-```yaml
-model:
-  strategy: fsdp2
-  fsdp_config:
-    cpu_offload: false
-    param_offload: false
-    optimizer_offload: false
-```
+    ```yaml
+    model:
+      strategy: fsdp2
+      fsdp_config:
+        cpu_offload: false
+        param_offload: false
+        optimizer_offload: false
+    ```
 
-### CPU Offloading (Memory-Constrained)
+=== "CPU Offloading (Memory-Constrained)"
 
-```yaml
-model:
-  fsdp_config:
-    cpu_offload: true
-    offload_params: true
-```
+    ```yaml
+    model:
+      fsdp_config:
+        cpu_offload: true
+        offload_params: true
+    ```
 
-### Gradient Checkpointing (Reduce Memory)
+=== "Gradient Checkpointing (Reduce Memory)"
 
-```yaml
-model:
-  enable_gradient_checkpointing: true
-```
+    ```yaml
+    model:
+      enable_gradient_checkpointing: true
+    ```
 
-### Learning Rate Schedulers
+=== "Learning Rate Schedulers"
 
-```yaml
-optim:
-  lr_scheduler: cosine  # or 'wsd' (warmup-stable-decay)
-  warmup_steps_ratio: 0.05
-```
+    ```yaml
+    optim:
+      lr_scheduler: cosine  # or 'wsd' (warmup-stable-decay)
+      warmup_steps_ratio: 0.05
+    ```
 
 ---
 
 
 ## Next Steps
 
-- [Generative Pointwise](generative-pointwise.md) — Train with absolute score labels
-- [Generative Pairwise](generative-pairwise.md) — Train with comparative evaluations
+- [Generative Pointwise](generative_pointwise.md) — Train with absolute score labels
+- [Generative Pairwise](generative_pairwise.md) — Train with comparative evaluations
 - [SFT for Reward Models](sft.md) — Pre-train with supervised fine-tuning
 - [Training Overview](overview.md) — Compare all training methods
 

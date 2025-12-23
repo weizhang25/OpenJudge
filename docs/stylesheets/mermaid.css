@@ -65,24 +65,24 @@ article figure.mermaid figcaption {
 
 /* Dark theme adjustments */
 .dark article .mermaid,
-[data-theme="dark"] article .mermaid {
+.dark article .mermaid {
   border-color: rgba(148, 163, 184, 0.2);
   background: rgba(15, 23, 42, 0.55);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.65);
 }
 
 .dark article .mermaid text,
-[data-theme="dark"] article .mermaid text {
+.dark article .mermaid text {
   fill: var(--muted-foreground, #e2e8f0);
 }
 
 .dark article .mermaid .label,
-[data-theme="dark"] article .mermaid .label {
+.dark article .mermaid .label {
   color: var(--muted-foreground, #e2e8f0);
 }
 
 .dark article figure.mermaid figcaption,
-[data-theme="dark"] article figure.mermaid figcaption {
+.dark article figure.mermaid figcaption {
   color: var(--muted-foreground, #cbd5f5);
 }
 

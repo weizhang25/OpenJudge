@@ -8,11 +8,11 @@ Train reward models to generate absolute quality scores for individual responses
 
 Generative pointwise training uses **Group Relative Policy Optimization (GRPO)** to train language models to output structured evaluation scores. Unlike Bradley-Terry which learns rankings, pointwise training learns to assign absolute quality ratings.
 
-**When to use:**
-- You have labeled data with quality scores (e.g., helpfulness: 0-4)
-- Need fine-grained scoring rather than binary comparisons
-- Want natural language explanations alongside scores
-- Building domain-specific evaluators
+!!! tip "When to use Generative Pointwise"
+    - You have labeled data with quality scores (e.g., helpfulness: 0-4)
+    - Need fine-grained scoring rather than binary comparisons
+    - Want natural language explanations alongside scores
+    - Building domain-specific evaluators
 
 **Training approach:**
 
@@ -57,74 +57,73 @@ Pointwise training expects Parquet files with:
 
 ### Label Schema
 
-Typical scoring scales:
-
-- **Helpfulness**: 0 (not helpful) to 4 (very helpful)
-- **Correctness**: 0 (wrong) to 4 (perfect)
-- **Relevance**: 0 (off-topic) to 4 (highly relevant)
+!!! info "Typical Scoring Scales"
+    - **Helpfulness**: 0 (not helpful) to 4 (very helpful)
+    - **Correctness**: 0 (wrong) to 4 (perfect)
+    - **Relevance**: 0 (off-topic) to 4 (highly relevant)
 
 ---
 
 ## Data Preparation
 
-### Option 1: Use HelpSteer2 Dataset
+=== "Option 1: Use HelpSteer2 Dataset"
 
-HelpSteer2 provides pre-labeled helpfulness scores:
+    HelpSteer2 provides pre-labeled helpfulness scores:
 
-```python
-from datasets import load_dataset
-import pandas as pd
+    ```python
+    from datasets import load_dataset
+    import pandas as pd
 
-# Load HelpSteer2
-dataset = load_dataset("nvidia/HelpSteer2")
+    # Load HelpSteer2
+    dataset = load_dataset("nvidia/HelpSteer2")
 
-# Convert to pointwise format
-def convert_to_pointwise(example):
-    return {
-        "input": [{"role": "user", "content": example["prompt"]}],
-        "output": {
-            "content": example["response"],
-            "label": {"helpfulness": int(example["helpfulness"])}
+    # Convert to pointwise format
+    def convert_to_pointwise(example):
+        return {
+            "input": [{"role": "user", "content": example["prompt"]}],
+            "output": {
+                "content": example["response"],
+                "label": {"helpfulness": int(example["helpfulness"])}
+            },
+            "data_source": "helpsteer2"
+        }
+
+    train_data = [convert_to_pointwise(ex) for ex in dataset["train"]]
+    test_data = [convert_to_pointwise(ex) for ex in dataset["test"]]
+
+    # Save as parquet
+    pd.DataFrame(train_data).to_parquet("./data/train_pointwise.parquet")
+    pd.DataFrame(test_data).to_parquet("./data/test_pointwise.parquet")
+    ```
+
+=== "Option 2: Create Custom Labeled Data"
+
+    ```python
+    import pandas as pd
+
+    # Your custom evaluation data
+    data = [
+        {
+            "input": [{"role": "user", "content": "What is Python?"}],
+            "output": {
+                "content": "Python is a high-level programming language known for readability and versatility.",
+                "label": {"helpfulness": 4}
+            },
+            "data_source": "custom"
         },
-        "data_source": "helpsteer2"
-    }
+        {
+            "input": [{"role": "user", "content": "What is Python?"}],
+            "output": {
+                "content": "It's a snake.",
+                "label": {"helpfulness": 1}
+            },
+            "data_source": "custom"
+        }
+    ]
 
-train_data = [convert_to_pointwise(ex) for ex in dataset["train"]]
-test_data = [convert_to_pointwise(ex) for ex in dataset["test"]]
-
-# Save as parquet
-pd.DataFrame(train_data).to_parquet("./data/train_pointwise.parquet")
-pd.DataFrame(test_data).to_parquet("./data/test_pointwise.parquet")
-```
-
-### Option 2: Create Custom Labeled Data
-
-```python
-import pandas as pd
-
-# Your custom evaluation data
-data = [
-    {
-        "input": [{"role": "user", "content": "What is Python?"}],
-        "output": {
-            "content": "Python is a high-level programming language known for readability and versatility.",
-            "label": {"helpfulness": 4}
-        },
-        "data_source": "custom"
-    },
-    {
-        "input": [{"role": "user", "content": "What is Python?"}],
-        "output": {
-            "content": "It's a snake.",
-            "label": {"helpfulness": 1}
-        },
-        "data_source": "custom"
-    }
-]
-
-df = pd.DataFrame(data)
-df.to_parquet("./data/custom_pointwise.parquet")
-```
+    df = pd.DataFrame(data)
+    df.to_parquet("./data/custom_pointwise.parquet")
+    ```
 
 ---
 
@@ -440,11 +439,12 @@ Track these key metrics during training:
 
 ### Expected Progress
 
-```
-Epoch 0.1: reward ~0.4, accuracy ~30%
-Epoch 0.5: reward ~0.7, accuracy ~55%
-Epoch 1.0: reward ~0.85, accuracy ~70%
-```
+!!! example "Typical Training Progress"
+    ```
+    Epoch 0.1: reward ~0.4, accuracy ~30%
+    Epoch 0.5: reward ~0.7, accuracy ~55%
+    Epoch 1.0: reward ~0.85, accuracy ~70%
+    ```
 
 ### Viewing Results
 
@@ -543,8 +543,8 @@ def compute_custom_reward(predicted, true):
 
 ## Next Steps
 
-- [Generative Pairwise](generative-pairwise.md) — Train with comparison preferences
-- [Bradley-Terry Training](bradley-terry.md) — Simpler preference-based approach
+- [Generative Pairwise](generative_pairwise.md) — Train with comparison preferences
+- [Bradley-Terry Training](bradley_terry.md) — Simpler preference-based approach
 - [SFT for Reward Models](sft.md) — Initialize with supervised fine-tuning
 - [Training Overview](overview.md) — Compare training methods
 

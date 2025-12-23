@@ -219,7 +219,7 @@ f(x) = \int_{-\infty}^{\infty} \hat{f}(\xi) e^{2\pi i \xi x} d\xi
 ## Links and References
 
 - [External Link](https://example.com)
-- [Internal Link to Overview](../graders/overview.md)
+- [Internal Link to Overview](../built_in_graders/overview.md)
 - Footnotes[^1]
 
 [^1]: This is a footnote. Use them sparingly.
@@ -263,21 +263,21 @@ Use workflow components to display step-by-step processes with numbered badges a
 <ol class="workflow-steps">
 <li><strong>Create a dataset</strong>
 
-Create a [dataset](../graders/overview.md) with [examples](../graders/overview.md) from manually curated test cases, historical production traces, or synthetic data generation.</li>
+Create a [dataset](../built_in_graders/overview.md) with [examples](../built_in_graders/overview.md) from manually curated test cases, historical production traces, or synthetic data generation.</li>
 <li><strong>Define evaluators</strong>
 
-Create [evaluators](../graders/overview.md) to score performance:
+Create [evaluators](../built_in_graders/overview.md) to score performance:
 
-- [Human](../graders/overview.md) review
-- [Code](../graders/overview.md) rules
-- [LLM-as-judge](../graders/overview.md)
-- [Pairwise](../graders/overview.md) comparison</li>
+- [Human](../built_in_graders/overview.md) review
+- [Code](../built_in_graders/overview.md) rules
+- [LLM-as-judge](../built_in_graders/overview.md)
+- [Pairwise](../built_in_graders/overview.md) comparison</li>
 <li><strong>Run an experiment</strong>
 
-Execute your application on the dataset to create an [experiment](../graders/overview.md). Configure [repetitions, concurrency, and caching](../graders/overview.md) to optimize runs.</li>
+Execute your application on the dataset to create an [experiment](../built_in_graders/overview.md). Configure [repetitions, concurrency, and caching](../built_in_graders/overview.md) to optimize runs.</li>
 <li><strong>Analyze results</strong>
 
-Compare experiments for [benchmarking](../graders/overview.md), [unit tests](../graders/overview.md), [regression tests](../graders/overview.md), or [backtesting](../graders/overview.md).</li>
+Compare experiments for [benchmarking](../built_in_graders/overview.md), [unit tests](../built_in_graders/overview.md), [regression tests](../built_in_graders/overview.md), or [backtesting](../built_in_graders/overview.md).</li>
 </ol>
 </div>
 </div>
@@ -292,21 +292,21 @@ Use tabs when you have multiple related workflows to display:
     <ol class="workflow-steps">
     <li><strong>Create a dataset</strong>
 
-    Create a [dataset](../graders/overview.md) with [examples](../graders/overview.md) from manually curated test cases, historical production traces, or synthetic data generation.</li>
+    Create a [dataset](../built_in_graders/overview.md) with [examples](../built_in_graders/overview.md) from manually curated test cases, historical production traces, or synthetic data generation.</li>
     <li><strong>Define evaluators</strong>
 
-    Create [evaluators](../graders/overview.md) to score performance:
+    Create [evaluators](../built_in_graders/overview.md) to score performance:
 
-    - [Human](../graders/overview.md) review
-    - [Code](../graders/overview.md) rules
-    - [LLM-as-judge](../graders/overview.md)
-    - [Pairwise](../graders/overview.md) comparison</li>
+    - [Human](../built_in_graders/overview.md) review
+    - [Code](../built_in_graders/overview.md) rules
+    - [LLM-as-judge](../built_in_graders/overview.md)
+    - [Pairwise](../built_in_graders/overview.md) comparison</li>
     <li><strong>Run an experiment</strong>
 
-    Execute your application on the dataset to create an [experiment](../graders/overview.md). Configure [repetitions, concurrency, and caching](../graders/overview.md) to optimize runs.</li>
+    Execute your application on the dataset to create an [experiment](../built_in_graders/overview.md). Configure [repetitions, concurrency, and caching](../built_in_graders/overview.md) to optimize runs.</li>
     <li><strong>Analyze results</strong>
 
-    Compare experiments for [benchmarking](../graders/overview.md), [unit tests](../graders/overview.md), [regression tests](../graders/overview.md), or [backtesting](../graders/overview.md).</li>
+    Compare experiments for [benchmarking](../built_in_graders/overview.md), [unit tests](../built_in_graders/overview.md), [regression tests](../built_in_graders/overview.md), or [backtesting](../built_in_graders/overview.md).</li>
     </ol>
     </div>
 
@@ -316,20 +316,20 @@ Use tabs when you have multiple related workflows to display:
     <ol class="workflow-steps">
     <li><strong>Configure tracing</strong>
 
-    Set up [tracing](../graders/overview.md) to capture production data in real-time.</li>
+    Set up [tracing](../built_in_graders/overview.md) to capture production data in real-time.</li>
     <li><strong>Add online evaluators</strong>
 
-    Attach [evaluators](../graders/overview.md) that run automatically on production traces:
+    Attach [evaluators](../built_in_graders/overview.md) that run automatically on production traces:
 
-    - [Latency](../graders/overview.md) monitoring
-    - [Error rate](../graders/overview.md) tracking
-    - [Quality](../graders/overview.md) scoring</li>
+    - [Latency](../built_in_graders/overview.md) monitoring
+    - [Error rate](../built_in_graders/overview.md) tracking
+    - [Quality](../built_in_graders/overview.md) scoring</li>
     <li><strong>Monitor dashboards</strong>
 
-    View real-time [dashboards](../graders/overview.md) to track model performance and detect regressions.</li>
+    View real-time [dashboards](../built_in_graders/overview.md) to track model performance and detect regressions.</li>
     <li><strong>Set up alerts</strong>
 
-    Configure [alerts](../graders/overview.md) to notify you when metrics fall below thresholds.</li>
+    Configure [alerts](../built_in_graders/overview.md) to notify you when metrics fall below thresholds.</li>
     </ol>
     </div>
 
@@ -469,7 +469,7 @@ Admonitions can contain complex nested content:
     result = grader.evaluate(response, reference)
     ```
 
-    Links also work: see the [Graders Overview](../graders/overview.md).
+    Links also work: see the [Graders Overview](../built_in_graders/overview.md).
 
 !!! tip "Lists in Admonitions"
     Admonitions support all list types:
@@ -518,14 +518,14 @@ Admonitions can contain complex nested content:
 
 ### Standard Links
 
-- [Internal documentation link](../graders/overview.md)
+- [Internal documentation link](../built_in_graders/overview.md)
 - [External link to GitHub](https://github.com/modelscope/RM-Gallery)
 
 ### Links with Code
 
-Check the [`LLMGrader`](../graders/overview.md) class for more details.
+Check the [`LLMGrader`](../built_in_graders/overview.md) class for more details.
 
-Use the [`evaluate()`](../graders/overview.md) method to run grading.
+Use the [`evaluate()`](../built_in_graders/overview.md) method to run grading.
 
 ---
 
@@ -553,9 +553,9 @@ Use dividers to separate major sections of your documentation.
 
 | Grader | Import | Documentation |
 |--------|--------|---------------|
-| `LLMGrader` | `from rm_gallery import LLMGrader` | [View docs](../graders/overview.md) |
-| `TextSimilarityGrader` | `from rm_gallery import TextSimilarityGrader` | [View docs](../graders/overview.md) |
-| `FunctionGrader` | `from rm_gallery import FunctionGrader` | [View docs](../graders/overview.md) |
+| `LLMGrader` | `from rm_gallery import LLMGrader` | [View docs](../built_in_graders/overview.md) |
+| `TextSimilarityGrader` | `from rm_gallery import TextSimilarityGrader` | [View docs](../built_in_graders/overview.md) |
+| `FunctionGrader` | `from rm_gallery import FunctionGrader` | [View docs](../built_in_graders/overview.md) |
 
 ---
 

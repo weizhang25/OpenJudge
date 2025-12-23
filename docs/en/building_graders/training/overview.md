@@ -17,21 +17,14 @@ Pre-built graders work well for general tasks, but custom training enables:
 
 ## Training Approaches
 
-RM-Gallery supports multiple training paradigms through the VERL framework. Choose the approach that matches your data type and evaluation goals:
+RM-Gallery supports multiple training paradigms through the VERL framework:
 
 | Approach | Best For | Training Signal | Complexity |
 |----------|----------|-----------------|------------|
-| [Bradley-Terry](bradley-terry.md) | Preference pairs | Binary comparisons (chosen/rejected) | Low |
-| [Generative (Pointwise)](generative-pointwise.md) | Absolute scoring | Direct score labels (0-4) | Medium |
-| [Generative (Pairwise)](generative-pairwise.md) | Comparative ranking | Preference decisions (A/B/tie) | Medium |
+| [Bradley-Terry](bradley_terry.md) | Preference pairs | Binary comparisons (chosen/rejected) | Low |
+| [Generative (Pointwise)](generative_pointwise.md) | Absolute scoring | Direct score labels (0-4) | Medium |
+| [Generative (Pairwise)](generative_pairwise.md) | Comparative ranking | Preference decisions (A/B/tie) | Medium |
 | [SFT](sft.md) | Quick initialization | Multi-turn conversations | Low |
-
-**How to Choose:**
-
-- **Have preference pairs?** → Use [Bradley-Terry](bradley-terry.md) (simplest, most common)
-- **Have absolute scores?** → Use [Generative Pointwise](generative-pointwise.md) (e.g., HelpSteer2 ratings)
-- **Have comparison labels?** → Use [Generative Pairwise](generative-pairwise.md) (e.g., "A is better than B")
-- **Starting from scratch?** → Use [SFT](sft.md) first, then fine-tune with another method
 
 ---
 
@@ -73,11 +66,11 @@ All training methods use the **VERL** (Versatile Efficient Reinforcement Learnin
 
 ---
 
-## Data Requirements & Preparation
+## Data Requirements
 
-All training approaches use **Parquet files** with specific column structures. Use RM-Gallery's data export utilities to convert your evaluation data to the required format.
+### General Format
 
-### Data Format by Training Method
+All training approaches use **Parquet files** with specific column structures:
 
 **Bradley-Terry:**
 ```python
@@ -108,9 +101,9 @@ All training approaches use **Parquet files** with specific column structures. U
 }
 ```
 
-### Export Your Data
+### Data Preparation
 
-Use RM-Gallery's data export utilities:
+Use RM-Gallery's data export utilities to convert your evaluation data:
 
 ```python
 from rm_gallery.core.generator import export_data
@@ -140,12 +133,12 @@ pip install verl
 pip install torch transformers datasets ray
 ```
 
-### 2. Convert Data to Parquet
+### 2. Prepare Data
 
-Use the command-line tool to convert your data:
+Convert your data to Parquet format:
 
 ```bash
-# Example: Export HelpSteer2 dataset
+# Example: Use HelpSteer2 dataset
 python -m rm_gallery.core.generator.export \
     --dataset helpsteer2 \
     --output-dir ./data \
@@ -158,7 +151,7 @@ Select based on your data and requirements:
 
 ```bash
 # Option 1: Bradley-Terry (simplest, binary preferences)
-cd tutorials/cookbooks/training_reward_model/bradley-terry
+cd tutorials/cookbooks/training_reward_model/bradley_terry
 bash run_bt.sh
 
 # Option 2: Generative Pointwise (absolute scores)
@@ -174,9 +167,9 @@ cd tutorials/cookbooks/training_reward_model/sft
 bash sft_rm.sh
 ```
 
-### 4. Build Grader from Trained Model
+### 4. Integrate Trained Model
 
-Use your trained model to construct a grader:
+Use your trained model as a grader:
 
 ```python
 from rm_gallery.core.models import OpenAIChatModel
@@ -200,9 +193,9 @@ result = await grader.aevaluate(
 
 ## Next Steps
 
-- [Bradley-Terry Training](bradley-terry.md) — Train with binary preference pairs
-- [Generative Pointwise](generative-pointwise.md) — Train with absolute scores
-- [Generative Pairwise](generative-pairwise.md) — Train with comparative preferences
+- [Bradley-Terry Training](bradley_terry.md) — Train with binary preference pairs
+- [Generative Pointwise](generative_pointwise.md) — Train with absolute scores
+- [Generative Pairwise](generative_pairwise.md) — Train with comparative preferences
 - [SFT for Reward Models](sft.md) — Initialize with supervised fine-tuning
 
 

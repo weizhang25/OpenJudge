@@ -42,7 +42,8 @@ Benchmark results using qwen3-max on agent evaluation tasks:
 | ReflectionOutcomeUnderstandingGrader | 24 | 76% | ALFWorld, GAIA |
 | ReflectionProgressAwarenessGrader | 40 | 70% | ALFWorld, WebShop, GAIA |
 
-> **Note:** Preference Accuracy measures alignment with human-annotated preference labels (positive and negative samples) on agent evaluation tasks. Higher is better.
+!!! note "Performance Metrics"
+    Preference Accuracy measures alignment with human-annotated preference labels (positive and negative samples) on agent evaluation tasks. Higher is better.
 
 
 ---
@@ -97,6 +98,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The action 'open drawer 1' directly implements the stated plan 'I will open drawer 1 to find the key.' It targets the correct object (drawer 1), contributes to achieving the goal of finding the key, follows the logical order outlined in the plan, and respects any implied preconditions (e.g., needing to open the drawer to access its contents). The alignment is clear and direct, so confidence is high.
+```
+
 ### ActionLoopDetectionGrader
 
 Detects repetitive or similar actions in agent sequences.
@@ -107,7 +115,7 @@ Detects repetitive or similar actions in agent sequences.
 - Detect inefficient exploration strategies
 - Debug stuck agents in multi-step tasks
 
-**Evaluation method:** Compares all pairs of action signatures for similarity.
+**Evaluation criteria:** Compares all pairs of action signatures for similarity.
 
 **Parameters:**
 
@@ -143,6 +151,13 @@ async def main():
     print(f"Similar pairs: {result.metadata['similar_pair_count']}")
 
 asyncio.run(main())
+```
+
+**Output:**
+
+```
+Score: 0.0
+Similar pairs: 1
 ```
 
 ---
@@ -204,6 +219,13 @@ async def main():
     print(f"Reason: {result.reason}")
 
 asyncio.run(main())
+```
+
+**Output:**
+
+```
+Score: 5.0
+Reason: The selected tools are highly relevant and directly address the user's query. The 'search_files' tool with the pattern '*.py' effectively identifies all Python files in the system, while the 'git_log' tool with the argument 'days: 7' retrieves the commit history for the last week, which can be used to determine which of those Python files were modified recently. Together, these tools provide a complete and efficient solution without including any unnecessary or redundant tools. The selection demonstrates a clear understanding of both the task intent and the capabilities of the available tools.
 ```
 
 ### ToolCallAccuracyGrader
@@ -276,6 +298,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 5.0
+Reason: The tool call 'get_weather' is fully relevant to the user's query about the weather in New York. The name of the tool call matches one of the function names in the tool definitions, and the parameter 'location' with the value 'New York' is correctly extracted from the conversation and aligns with the description in the tool definition.
+```
+
 ### ToolCallSuccessGrader
 
 Evaluates technical execution success of tool calls (no errors, exceptions, or timeouts).
@@ -286,7 +315,7 @@ Evaluates technical execution success of tool calls (no errors, exceptions, or t
 - Monitor agent reliability
 - Debug tool integration issues
 
-> **Note:** This grader only checks technical success, not business correctness.
+**Evaluation criteria:** Checks for technical execution success (no errors, exceptions, or timeouts). Does not evaluate business correctness.
 
 **Parameters:**
 
@@ -340,6 +369,13 @@ async def main():
     print(f"Reason: {result.reason}")
 
 asyncio.run(main())
+```
+
+**Output:**
+
+```
+Score: 1.0
+Reason: The tool call executed successfully, returned a non-empty result, and did not contain any error messages or exceptions.
 ```
 
 ### ToolParameterCheckGrader
@@ -399,6 +435,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The tool call correctly extracted all required parameters from the user query. The 'pattern' parameter was set to '*.py', which accurately reflects the intent to search for Python files. The 'directory' parameter was set to 'src', matching the specified directory in the query. Both parameters are present, grounded in the query, and formatted correctly as strings. There are no hallucinations or missing parameters, and the data types align with the tool's definition. The tool call is fully executable with correct parameters.
+```
+
 ### ToolCallSequenceMatchGrader
 
 Compares agent tool call sequences against reference sequences.
@@ -409,7 +452,7 @@ Compares agent tool call sequences against reference sequences.
 - Trajectory comparison and validation
 - A/B testing different agent implementations
 
-**Matching modes:** Strict (name + parameters) or loose (name only).
+**Evaluation criteria:** Strict mode matches name + parameters; loose mode matches name only.
 
 **Parameters:**
 
@@ -460,6 +503,13 @@ async def main():
     print(f"Reason: {result.reason}")
 
 asyncio.run(main())
+```
+
+**Output:**
+
+```
+Score: 1.0
+Reason: Tool call sequence evaluation (strict mode, jaccard): jaccard_similarity=1.000
 ```
 
 ---
@@ -514,6 +564,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The memory accurately reflects the observation by recording only factual details present in the input. The agent correctly notes that the cabinet is 'closed' and has 'three drawers,' which are both explicitly mentioned in the observation. There are no interpretations, assumptions, or fabrications included in the memory. The information is consistent with what was observed, and all recorded elements are grounded in the provided context. This demonstrates good accuracy as per the rubrics.
+```
+
 ### MemoryDetailPreservationGrader
 
 Evaluates preservation of important details in stored memory.
@@ -562,6 +619,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The agent successfully preserves all important details from the observation in its memory. It retains the specific location of Cabinet 1 with exact coordinates (3.5, 2.1), the quantity of items (5 apples), and the attribute (red). These details align directly with the rubrics for preserving spatial information, numerical values, and specific attributes. The memory is sufficiently detailed and actionable for future inventory-related tasks. Confidence is high because the preservation is explicit and matches the original observation precisely.
+```
+
 ### MemoryRetrievalEffectivenessGrader
 
 Evaluates effectiveness of memory retrieval for planning and decision-making.
@@ -571,6 +635,8 @@ Evaluates effectiveness of memory retrieval for planning and decision-making.
 - Assess memory system effectiveness
 - Detect failure to use available information
 - Identify repetitive behavior due to poor retrieval
+
+**Evaluation criteria:** Memory retrieval relevance, usage in planning, and avoidance of redundant exploration.
 
 **Parameters:**
 
@@ -608,6 +674,13 @@ async def main():
     print(f"Reason: {result.reason}")
 
 asyncio.run(main())
+```
+
+**Output:**
+
+```
+Score: 1.0
+Reason: The agent's plan effectively retrieves relevant information from memory by referencing the key found in drawer 1 during step 3. This demonstrates that the agent is using previously stored and correct information to inform its current action of unlocking the door. The plan aligns with the memory content, avoids repetition of past actions (no indication of trying other drawers), and is consistent with the observation of a locked door. The retrieval is current and accurate, showing strong memory effectiveness. Confidence is high because the connection between memory and plan is clear and directly supports the task at hand.
 ```
 
 ---
@@ -664,6 +737,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The plan is logically sound and feasible. It respects causal logic by first retrieving the key (which is inside the drawer) before attempting to unlock the door. The sequence of actions—opening the drawer, obtaining the key, and then unlocking the door—is in a correct and necessary order. The plan also accounts for the current environment state: the drawer is closed, and the agent does not yet have the key. Therefore, opening the drawer is a valid prerequisite action. The steps are consistent with the goal of unlocking the door and are executable given the described scenario. Confidence is high because all rubrics for feasibility are clearly satisfied.
+```
+
 ---
 
 ## Reflection Graders
@@ -716,6 +796,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The reflection accurately summarizes the observation without adding, omitting, or fabricating any information. The agent mentions only what was observed: a closed cabinet. It does not introduce any additional objects, states, or details that were not present in the original observation. This demonstrates full compliance with all rubrics for reflection accuracy. Confidence is high because the reflection is directly and explicitly grounded in the observation.
+```
+
 ### ReflectionOutcomeUnderstandingGrader
 
 Evaluates correctness of action outcome interpretation in reflections.
@@ -726,7 +813,7 @@ Evaluates correctness of action outcome interpretation in reflections.
 - Detect fabricated or distorted understanding
 - Ensure evidence-based reasoning
 
-**Validation:** Strict factual accuracy checking.
+**Evaluation criteria:** Strict factual accuracy checking of outcome interpretation.
 
 **Parameters:**
 
@@ -764,6 +851,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The reflection accurately mirrors the observation: 'The drawer is now open. You see a key inside.' The agent correctly interprets this as a successful action (opening the drawer) and identifies the presence of the key, which aligns with the task objective of finding the key. There is no factual distortion, no unsupported inference, and no overreach in interpreting partial information. The agent does not claim to have seen all contents or make premature conclusions about absence. The reasoning is directly supported by the observation and demonstrates good understanding of both the outcome and its implications.
+```
+
 ### ReflectionProgressAwarenessGrader
 
 Evaluates accuracy of task progress awareness and sub-goal recognition.
@@ -773,6 +867,8 @@ Evaluates accuracy of task progress awareness and sub-goal recognition.
 - Assess task progress tracking
 - Detect loop/stuck situations
 - Validate sub-goal awareness
+
+**Evaluation criteria:** Correct identification of accomplishments, accurate distance-to-goal assessment, and recognition of all sub-goals.
 
 **Parameters:**
 
@@ -810,6 +906,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 1.0
+Reason: The agent demonstrates accurate progress awareness by correctly identifying that it has collected 3 out of the 5 required items and acknowledging that 2 more are still needed. The reflection states, 'I'm about halfway through the task,' which is a realistic estimation given the current state. The agent does not overestimate its progress or ignore any critical sub-goals. It also shows awareness of the exact number of remaining tasks without substituting or omitting any specific item from the original task description. The reflection is concise but contains all necessary information to assess forward progress accurately. Confidence in this evaluation is high because the agent's self-assessment aligns with the observable facts and task constraints.
+```
+
 ---
 
 ## Observation Graders
@@ -824,7 +927,7 @@ Measures information gain and redundancy in observation sequences.
 - Detect redundant information gathering
 - Assess agent curiosity/exploration strategy
 
-**Scoring:** Rewards novel observations, penalizes redundant ones.
+**Evaluation criteria:** Rewards novel observations, penalizes redundant ones based on similarity threshold.
 
 **Parameters:**
 
@@ -862,6 +965,13 @@ async def main():
 asyncio.run(main())
 ```
 
+**Output:**
+
+```
+Score: 0.7857142857142857
+Each turn similarity: [0.0, 0.42857142857142855]
+```
+
 ---
 
 ## Trajectory Graders
@@ -877,7 +987,7 @@ Comprehensive evaluation of complete agent trajectories.
 - Agent benchmark evaluation
 - Production quality monitoring
 
-**Evaluation dimensions:** Step contribution, relevance, accuracy, and efficiency.
+**Evaluation criteria:** Step contribution, relevance, accuracy, and efficiency across the complete trajectory.
 
 **Parameters:**
 
@@ -939,50 +1049,17 @@ async def main():
 asyncio.run(main())
 ```
 
----
+**Output:**
 
-## Combining Multiple Graders
-
-For comprehensive agent evaluation, combine multiple graders using `GradingRunner`:
-
-```python
-import asyncio
-from rm_gallery.core.models import OpenAIChatModel
-from rm_gallery.core.graders.agent import (
-    ActionAlignmentGrader,
-    MemoryAccuracyGrader,
-    PlanFeasibilityGrader,
-)
-from rm_gallery.core.runner.grading_runner import GradingRunner, GraderConfig
-
-async def main():
-    model = OpenAIChatModel(model="qwen3-32b")
-
-    grader_configs = {
-        "action_alignment": GraderConfig(grader=ActionAlignmentGrader(model=model)),
-        "memory_accuracy": GraderConfig(grader=MemoryAccuracyGrader(model=model)),
-        "plan_feasibility": GraderConfig(grader=PlanFeasibilityGrader(model=model)),
-    }
-
-    runner = GradingRunner(grader_configs=grader_configs)
-
-    dataset = [
-        {
-            "plan": "I will open the drawer to find the key",
-            "action": "open drawer 1",
-            "observation": "The drawer is closed",
-            "memory": "The key is in drawer 1",
-            "query": "Find the key"
-        }
-    ]
-
-    results = await runner.arun(dataset)
-
-    print(f"Action Alignment: {results['action_alignment'][0].score}")
-    print(f"Memory Accuracy: {results['memory_accuracy'][0].score}")
-    print(f"Plan Feasibility: {results['plan_feasibility'][0].score}")
-
-asyncio.run(main())
+```
+Overall Score: 1.0
+Is Resolved: True
+Avg Contribution: 1.0
+Avg Relevance: 1.0
+Avg Accuracy: 1.0
+Avg Efficiency: 1.0
+Step 0: This step searches for all Python files (files ending with .py) in the system. It is a foundational step that identifies the set of candidate files to evaluate for modification date. Without this step, there would be no list of files to analyze further. The pattern used is accurate and directly relevant to the user's query.
+Step 1: This step retrieves file metadata (specifically modification dates) for the identified Python files. This information is essential to determine which files were modified today. The result correctly distinguishes between 'today' and 'yesterday', enabling the final answer to be constructed accurately. This is a critical follow-up to Step 0 and directly supports the user's goal.
 ```
 
 ---
@@ -998,3 +1075,11 @@ Agent graders provide comprehensive evaluation across all aspects of agent behav
 - **Systematic improvement** — Combine multiple graders to diagnose where agents fail, why they fail, and how to improve them
 
 Build complete evaluation pipelines by combining graders from different categories to match your agent architecture and debugging needs.
+
+---
+
+## Next Steps
+
+- [General Graders](general.md) — Evaluate response quality and relevance
+- [Multimodal Graders](multimodal.md) — Evaluate image and vision tasks
+- [Build Reward for Training](../get_started/build_reward.md) — Combine multiple graders for RLHF rewards

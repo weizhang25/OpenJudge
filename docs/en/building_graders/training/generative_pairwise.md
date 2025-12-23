@@ -611,8 +611,8 @@ class ConfidentPairwiseTemplate(BaseModel):
 
 ## Next Steps
 
-- [Generative Pointwise](generative-pointwise.md) — Train with absolute scores
-- [Bradley-Terry Training](bradley-terry.md) — Implicit ranking approach
+- [Generative Pointwise](generative_pointwise.md) — Train with absolute scores
+- [Bradley-Terry Training](bradley_terry.md) — Implicit ranking approach
 - [SFT for Reward Models](sft.md) — Initialize with supervised learning
 - [Training Overview](overview.md) — Compare all methods
 

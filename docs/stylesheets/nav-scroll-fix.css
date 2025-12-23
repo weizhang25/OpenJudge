@@ -317,8 +317,8 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id],
 .dark .md-sidebar::-webkit-scrollbar-thumb,
 .dark .nav-sidebar::-webkit-scrollbar-thumb,
 .dark aside.sidebar::-webkit-scrollbar-thumb,
-[data-theme="dark"] nav.sidebar::-webkit-scrollbar-thumb,
-[data-theme="dark"] .md-sidebar::-webkit-scrollbar-thumb {
+.dark nav.sidebar::-webkit-scrollbar-thumb,
+.dark .md-sidebar::-webkit-scrollbar-thumb {
   background: var(--muted-foreground, #4b5563);
 }
 
@@ -327,8 +327,8 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id],
 .dark .md-sidebar a,
 .dark .nav-sidebar a,
 .dark aside.sidebar a,
-[data-theme="dark"] nav.sidebar a,
-[data-theme="dark"] .md-sidebar a {
+.dark nav.sidebar a,
+.dark .md-sidebar a {
   color: var(--muted-foreground, #9ca3af);
 }
 
@@ -336,8 +336,8 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id],
 .dark .md-sidebar a:hover,
 .dark .nav-sidebar a:hover,
 .dark aside.sidebar a:hover,
-[data-theme="dark"] nav.sidebar a:hover,
-[data-theme="dark"] .md-sidebar a:hover {
+.dark nav.sidebar a:hover,
+.dark .md-sidebar a:hover {
   color: var(--foreground, #f3f4f6);
   background: rgba(255, 255, 255, 0.05);
 }
@@ -347,8 +347,8 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id],
 .dark nav.sidebar a[aria-current="page"],
 .dark .md-sidebar a.active,
 .dark .md-nav__link--active,
-[data-theme="dark"] nav.sidebar a.active,
-[data-theme="dark"] .md-sidebar a.active {
+.dark nav.sidebar a.active,
+.dark .md-sidebar a.active {
   color: var(--primary, #60a5fa);
   background: rgba(96, 165, 250, 0.1);
 }
@@ -357,37 +357,37 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id],
 .dark .toc a,
 .dark .md-sidebar--secondary a,
 .dark .table-of-contents a,
-[data-theme="dark"] .toc a,
-[data-theme="dark"] .md-sidebar--secondary a {
+.dark .toc a,
+.dark .md-sidebar--secondary a {
   color: var(--muted-foreground, #9ca3af);
 }
 
 .dark .toc a:hover,
 .dark .md-sidebar--secondary a:hover,
-[data-theme="dark"] .toc a:hover,
-[data-theme="dark"] .md-sidebar--secondary a:hover {
+.dark .toc a:hover,
+.dark .md-sidebar--secondary a:hover {
   color: var(--foreground, #f3f4f6);
   border-left-color: var(--muted-foreground, #6b7280);
 }
 
 .dark .toc a.active,
 .dark .md-sidebar--secondary a.active,
-[data-theme="dark"] .toc a.active,
-[data-theme="dark"] .md-sidebar--secondary a.active {
+.dark .toc a.active,
+.dark .md-sidebar--secondary a.active {
   color: var(--primary, #60a5fa);
   border-left-color: var(--primary, #60a5fa);
 }
 
 /* Dark mode scroll to top */
 .dark .scroll-to-top,
-[data-theme="dark"] .scroll-to-top {
+.dark .scroll-to-top {
   background: var(--background, #1f2937);
   border-color: var(--border, #374151);
   color: var(--muted-foreground, #9ca3af);
 }
 
 .dark .scroll-to-top:hover,
-[data-theme="dark"] .scroll-to-top:hover {
+.dark .scroll-to-top:hover {
   color: var(--foreground, #f3f4f6);
   border-color: var(--primary, #60a5fa);
 }
@@ -452,8 +452,8 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id],
   .dark .md-sidebar.mobile-drawer,
   .dark .nav-sidebar.mobile-drawer,
   .dark aside.sidebar.mobile-drawer,
-  [data-theme="dark"] nav.sidebar.mobile-drawer,
-  [data-theme="dark"] .md-sidebar.mobile-drawer {
+  .dark nav.sidebar.mobile-drawer,
+  .dark .md-sidebar.mobile-drawer {
     background: var(--background, #111827);
     border-right-color: var(--border, #374151);
   }

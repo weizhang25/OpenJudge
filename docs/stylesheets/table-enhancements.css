@@ -152,27 +152,27 @@ article table a:hover,
 .dark article table,
 .dark .prose table,
 .dark .md-typeset table:not([class]),
-[data-theme="dark"] article table,
-[data-theme="dark"] .prose table,
-[data-theme="dark"] .md-typeset table:not([class]) {
+.dark article table,
+.dark .prose table,
+.dark .md-typeset table:not([class]) {
   border-color: var(--border, #374151);
 }
 
 .dark article table thead,
 .dark .prose table thead,
 .dark .md-typeset table:not([class]) thead,
-[data-theme="dark"] article table thead,
-[data-theme="dark"] .prose table thead,
-[data-theme="dark"] .md-typeset table:not([class]) thead {
+.dark article table thead,
+.dark .prose table thead,
+.dark .md-typeset table:not([class]) thead {
   background: var(--muted, #1f2937);
 }
 
 .dark article table th,
 .dark .prose table th,
 .dark .md-typeset table:not([class]) th,
-[data-theme="dark"] article table th,
-[data-theme="dark"] .prose table th,
-[data-theme="dark"] .md-typeset table:not([class]) th {
+.dark article table th,
+.dark .prose table th,
+.dark .md-typeset table:not([class]) th {
   color: var(--foreground, #f9fafb);
   border-bottom-color: var(--border, #374151);
 }
@@ -180,9 +180,9 @@ article table a:hover,
 .dark article table td,
 .dark .prose table td,
 .dark .md-typeset table:not([class]) td,
-[data-theme="dark"] article table td,
-[data-theme="dark"] .prose table td,
-[data-theme="dark"] .md-typeset table:not([class]) td {
+.dark article table td,
+.dark .prose table td,
+.dark .md-typeset table:not([class]) td {
   color: var(--foreground, #e5e7eb);
   border-bottom-color: var(--border, #374151);
 }
@@ -191,9 +191,9 @@ article table a:hover,
 .dark article table tbody tr:nth-child(even),
 .dark .prose table tbody tr:nth-child(even),
 .dark .md-typeset table:not([class]) tbody tr:nth-child(even),
-[data-theme="dark"] article table tbody tr:nth-child(even),
-[data-theme="dark"] .prose table tbody tr:nth-child(even),
-[data-theme="dark"] .md-typeset table:not([class]) tbody tr:nth-child(even) {
+.dark article table tbody tr:nth-child(even),
+.dark .prose table tbody tr:nth-child(even),
+.dark .md-typeset table:not([class]) tbody tr:nth-child(even) {
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -201,9 +201,9 @@ article table a:hover,
 .dark article table tbody tr:hover,
 .dark .prose table tbody tr:hover,
 .dark .md-typeset table:not([class]) tbody tr:hover,
-[data-theme="dark"] article table tbody tr:hover,
-[data-theme="dark"] .prose table tbody tr:hover,
-[data-theme="dark"] .md-typeset table:not([class]) tbody tr:hover {
+.dark article table tbody tr:hover,
+.dark .prose table tbody tr:hover,
+.dark .md-typeset table:not([class]) tbody tr:hover {
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -211,9 +211,9 @@ article table a:hover,
 .dark article table code,
 .dark .prose table code,
 .dark .md-typeset table:not([class]) code,
-[data-theme="dark"] article table code,
-[data-theme="dark"] .prose table code,
-[data-theme="dark"] .md-typeset table:not([class]) code {
+.dark article table code,
+.dark .prose table code,
+.dark .md-typeset table:not([class]) code {
   background: var(--muted, #374151);
 }
 

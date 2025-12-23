@@ -50,9 +50,9 @@ This page demonstrates all the visual enhancements and animations implemented in
 
 Hover over these links to see the animated underline effect:
 
-- [Regular internal link](../graders/overview.md)
+- [Regular internal link](../built_in_graders/overview.md)
 - [External link with icon animation](https://example.com)
-- Link with code inside: [`rm_gallery.graders`](../graders/overview.md)
+- Link with code inside: [`rm_gallery.graders`](../built_in_graders/overview.md)
 
 ---
 

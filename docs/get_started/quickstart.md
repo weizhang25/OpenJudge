@@ -2,148 +2,119 @@
 
 Get started with RM-Gallery in 5 minutes. This guide walks you through installation, environment setup, and running your first evaluation.
 
-RM-Gallery evaluates AI responses using two approaches: **LLM-as-a-Judge** for subjective quality assessment, and **rule-based execution** for objective metrics like code correctness. You provide a query-response pair, and a grader returns a score with an explanation.
-
----
-
 ## Installation
 
-**pip:**
+=== "pip"
 
     ```bash
     pip install rm-gallery
     ```
 
-**Poetry:**
+=== "Poetry"
 
-```bash
-git clone https://github.com/modelscope/RM-Gallery.git
-cd RM-Gallery
-poetry install
-```
+    ```bash
+    git clone https://github.com/modelscope/RM-Gallery.git
+    cd RM-Gallery
+    poetry install
+    ```
 
-> **Tip:** RM-Gallery requires Python 3.10 or higher.
+!!! tip "Requirements"
+    RM-Gallery requires Python 3.10 or higher.
 
----
 
 ## Configure Environment
 
 For LLM-based graders, you need to configure API credentials. RM-Gallery uses the OpenAI-compatible API format.
 
-**Option 1: Environment Variables (Recommended)**
+=== "Environment Variables (Recommended)"
 
-Set environment variables in your terminal:
+    Set environment variables in your terminal:
 
-**OpenAI:**
+    **OpenAI:**
 
-```bash
-export OPENAI_API_KEY="sk-your-api-key"
-export OPENAI_BASE_URL="https://api.openai.com/v1"
-```
+    ```bash
+    export OPENAI_API_KEY="sk-your-api-key"
+    export OPENAI_BASE_URL="https://api.openai.com/v1"
+    ```
 
-**DashScope (Qwen):**
+    **DashScope (Qwen):**
 
-```bash
-export OPENAI_API_KEY="sk-your-dashscope-key"
-export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-```
+    ```bash
+    export OPENAI_API_KEY="sk-your-dashscope-key"
+    export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    ```
 
-**Option 2: Pass Directly in Code**
+=== "Pass Directly in Code"
 
-You can also pass credentials when creating the model:
+    You can also pass credentials when creating the model:
 
-```python
-from rm_gallery.core.models import OpenAIChatModel
+    ```python
+    from rm_gallery.core.models import OpenAIChatModel
 
-model = OpenAIChatModel(
-    model="qwen3-32b",
-    api_key="sk-your-api-key",
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
-)
-```
+    model = OpenAIChatModel(
+        model="qwen3-32b",
+        api_key="sk-your-api-key",
+        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    )
+    ```
 
-> **Note:** Environment variables are more secure and convenient. The model will automatically use `OPENAI_API_KEY` and `OPENAI_BASE_URL` if set.
+!!! note "Security Best Practice"
+    Environment variables are more secure and convenient. The model will automatically use `OPENAI_API_KEY` and `OPENAI_BASE_URL` if set.
 
----
+
+## Choose a Grader for Your Scenario
+
+Suppose you're building a QA system and want to evaluate: **Does the AI assistant's response actually answer the user's question?**
+
+This is a **relevance** evaluation task. RM-Gallery provides the `RelevanceGrader` for exactly this purpose—it scores how well a response addresses the query on a 1-5 scale.
+
+| Your Scenario | Recommended Grader |
+|---------------|-------------------|
+| Does the response answer the question? | `RelevanceGrader` |
+| Is the response harmful or unsafe? | `HarmfulnessGrader` |
+| Does the response follow instructions? | `InstructionFollowingGrader` |
+| Is the response factually correct? | `CorrectnessGrader` |
+| Does the response contain hallucinations? | `HallucinationGrader` |
+
+For a complete list of available graders, see [Built-in Graders](../built_in_graders/overview.md).
+
+In this quickstart, we'll use `RelevanceGrader` to evaluate a QA response.
+
 
 ## Prepare Your Data
 
-RM-Gallery graders expect simple dictionaries with `query` and `response` fields:
+Prepare a dictionary with `query` and `response` fields:
 
 ```python
 data = {
-    "query": "What is the capital of France?",
-    "response": "The capital of France is Paris.",
+    "query": "What is machine learning?",
+    "response": "Machine learning is a subset of artificial intelligence that enables computers to learn patterns from data without being explicitly programmed. It uses algorithms to build models that can make predictions or decisions.",
 }
 ```
 
-For correctness evaluation, include a `ground_truth` field:
 
-```python
-data = {
-    "query": "What is 2 + 2?",
-    "response": "The answer is 4.",
-    "ground_truth": "4",
-}
-```
+## Initialize Model and Grader
 
----
-
-## Initialize a Grader
-
-RM-Gallery provides two types of **graders**:
-
-- **LLM-based graders**: Use language models to judge response quality (e.g., harmfulness, relevance)
-- **Rule-based graders**: Use algorithms and execution to evaluate responses (e.g., code execution, syntax checking)
-
-For LLM-based graders, first create the model that powers the evaluation:
-
-**OpenAI:**
+Create the LLM model and the `RelevanceGrader` to evaluate how well the response addresses the query:
 
 ```python
 from rm_gallery.core.models import OpenAIChatModel
+from rm_gallery.core.graders.common.relevance import RelevanceGrader
 
-model = OpenAIChatModel(model="qwen3-32b")
+# Create the judge model (uses OPENAI_API_KEY and OPENAI_BASE_URL from env)
+    model = OpenAIChatModel(model="qwen3-32b")
+
+# Create the grader
+grader = RelevanceGrader(model=model)
 ```
 
-**DashScope (Qwen):**
-
-```python
-from rm_gallery.core.models import OpenAIChatModel
-
-model = OpenAIChatModel(model="qwen-plus")
-```
-
-Then choose a grader based on what you want to evaluate:
-
-**Harmfulness:** Detects harmful, offensive, or inappropriate content in responses.
-
-```python
-from rm_gallery.core.graders.common.harmfulness import HarmfulnessGrader
-
-grader = HarmfulnessGrader(model=model)
-```
+!!! note "What is a Grader?"
+    A **Grader** is the core evaluation component in RM-Gallery. It takes a query-response pair and returns a score with an explanation. Learn more in [Core Concepts](core_concepts.md).
 
 
-**Code Execution:** Tests code against test cases (rule-based, no LLM needed).
+## Run Evaluation
 
-```python
-from rm_gallery.core.graders.code.code_excution import CodeExecutionGrader
-
-grader = CodeExecutionGrader(continuous=True, timeout=5)
-```
-
-> **Note:** Code and math graders don't require an LLM model. They use rule-based execution and validation.
-
----
-
-## Run Your First Evaluation
-
-All graders use async/await for efficient API calls. Here's how to run evaluations:
-
-**Single Sample:**
-
-Evaluate a single response with `aevaluate()`. The grader sends the query and response to the LLM judge and returns a score:
+All graders use async/await. Evaluate your data with `aevaluate()`:
 
 ```python
 import asyncio
@@ -151,120 +122,59 @@ from rm_gallery.core.models import OpenAIChatModel
 from rm_gallery.core.graders.common.relevance import RelevanceGrader
 
 async def main():
+    # Initialize model and grader
     model = OpenAIChatModel(model="qwen3-32b")
     grader = RelevanceGrader(model=model)
 
     # Prepare data
     data = {
         "query": "What is machine learning?",
-        "response": "Machine learning is a subset of AI that enables computers to learn from data.",
+        "response": "Machine learning is a subset of artificial intelligence that enables computers to learn patterns from data without being explicitly programmed. It uses algorithms to build models that can make predictions or decisions.",
     }
 
-    # Evaluate using the data
+    # Run evaluation
     result = await grader.aevaluate(**data)
 
-    print(f"Score: {result.score}")  # Score: 5
-    print(f"Reason: {result.reason}")
+    # Print result
+    print(result)
 
 asyncio.run(main())
 ```
 
-**Batch Evaluation:**
-
-For datasets, use `GradingRunner` to evaluate multiple samples concurrently with automatic progress tracking:
+**Output:**
 
 ```python
-import asyncio
-from rm_gallery.core.models import OpenAIChatModel
-from rm_gallery.core.graders.common.relevance import RelevanceGrader
-from rm_gallery.core.runner.grading_runner import GradingRunner, GraderConfig
-
-async def main():
-    model = OpenAIChatModel(model="qwen3-32b")
-    grader = RelevanceGrader(model=model)
-
-    # Configure the runner
-    runner = GradingRunner(
-        grader_configs={"relevance": GraderConfig(grader=grader)}
-    )
-
-    # Prepare dataset (same format as single samples)
-    dataset = [
-        {
-            "query": "What is Python?",
-            "response": "Python is a programming language."
-        },
-        {
-            "query": "Explain gravity",
-            "response": "Gravity is a force that attracts objects."
-        },
-    ]
-
-    # Run batch evaluation
-    results = await runner.arun(dataset)
-
-    # Print results
-    for i, result in enumerate(results["relevance"]):
-        print(f"Sample {i}: Score={result.score}")
-
-asyncio.run(main())
-```
-
----
-
-## Understanding Results
-
-Graders return different result types depending on their mode:
-
-### GraderScore (Pointwise Mode)
-
-For evaluating individual responses, graders return a `GraderScore` object:
-
-| Field | Description |
-|-------|-------------|
-| `score` | Numerical score (e.g., 0-1 or 1-5 scale) |
-| `reason` | Explanation for the score |
-| `name` | Name of the grader used |
-| `metadata` | Additional details (e.g., threshold settings) |
-
-```python
-result = await grader.aevaluate(query="...", response="...")
-
-print(result.score)     # 5
-print(result.reason)    # "Response directly addresses the query..."
-print(result.name)      # "relevance"
-print(result.metadata)  # {"threshold": 0.7}
-```
-
-### GraderRank (Listwise Mode)
-
-For ranking multiple responses, graders return a `GraderRank` object:
-
-| Field | Description |
-|-------|-------------|
-| `rank` | Ranking of responses (e.g., [1, 3, 2] means 1st is best, 3rd is second, 2nd is worst) |
-| `reason` | Explanation for the ranking |
-| `name` | Name of the grader used |
-| `metadata` | Additional ranking details |
-
-```python
-result = await grader.aevaluate(
-    query="...",
-    response_1="...",
-    response_2="...",
-    response_3="..."
+GraderScore(
+    name='relevance',
+    score=5.0,
+    reason="The response directly and clearly defines machine learning as a subset of artificial intelligence, explains its purpose (learning patterns from data without explicit programming), and mentions the use of algorithms to build predictive models. It is concise, on-topic, and fully addresses the user's question."
 )
-
-print(result.rank)      # [1, 3, 2]
-print(result.reason)    # "First response is most comprehensive..."
-print(result.name)      # "relevance_ranker"
 ```
 
----
+
+## Understanding the Output
+
+The `RelevanceGrader` returns a `GraderScore` object with the following fields:
+
+| Field | Description | Example Value |
+|-------|-------------|---------------|
+| `name` | Identifier of the grader | `"relevance"` |
+| `score` | Relevance score from 1 (irrelevant) to 5 (perfectly relevant) | `5.0` |
+| `reason` | LLM-generated explanation for the score | `"The response directly and clearly..."` |
+
+**Score Interpretation:**
+
+- **5 (Perfectly relevant)**: Response completely fulfills the query, accurately answering the question
+- **4 (Highly relevant)**: Response largely meets requirements, possibly missing minor details
+- **3 (Partially relevant)**: Response has some connection but doesn't fully meet requirements
+- **2 (Weakly relevant)**: Response has only weak connection, low practical value
+- **1 (Irrelevant)**: Response is completely unrelated or contains misleading information
+
+In this example, the response received a score of **5** because it directly defines machine learning, explains the core mechanism, and provides relevant context—fully satisfying the user's query.
+
 
 ## Next Steps
 
-- [Core Concepts](core-concepts.md) — Understand graders, modes, and scoring
-- [Built-in Graders](../graders/overview.md) — Explore 35+ pre-built graders
-- [Code & Math Graders](../graders/code-math.md) — Evaluate code execution, syntax, and style
-- [Create Custom Graders](../building-graders/custom-graders.md) — Build your own evaluation logic
+- [Core Concepts](core_concepts.md) — Understand graders, scoring modes, and result types
+- [Built-in Graders](../built_in_graders/overview.md) — Explore all available graders
+- [Create Custom Graders](../building_graders/create_custom_graders.md) — Build your own evaluation logic

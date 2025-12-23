@@ -72,7 +72,7 @@ article pre,
   background: var(--background, #ffffff);
   border: 1px solid var(--border, #e5e7eb);
   border-radius: var(--radius-lg, 0.5rem);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
@@ -83,12 +83,14 @@ article pre code,
   display: block;
   padding: 1rem 1.25rem;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 600px;
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
   font-size: 0.8125rem;
   line-height: 1.7;
   background: transparent;
   border: none;
-  border-radius: 0;
+  border-radius: var(--radius-lg, 0.5rem);
   -webkit-font-smoothing: antialiased;
   tab-size: 2;
 }
@@ -137,7 +139,7 @@ article .highlight,
 .md-typeset .highlight {
   margin: 1.5em 0;
   border-radius: var(--radius-lg, 0.5rem);
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--border, #e5e7eb);
   background: var(--background, #ffffff);
 }
@@ -147,7 +149,8 @@ article .highlight pre,
 .md-typeset .highlight pre {
   margin: 0;
   border: none;
-  border-radius: 0;
+  border-radius: var(--radius-lg, 0.5rem);
+  overflow: visible;
 }
 
 /* ========================================
@@ -269,7 +272,7 @@ article .highlight[data-lang]::before,
 }
 
 /* ========================================
-   Horizontal Scroll Indicator
+   Scroll Indicator (Horizontal & Vertical)
    ======================================== */
 
 article pre code,
@@ -279,10 +282,12 @@ article pre code,
   scrollbar-color: var(--muted-foreground, #9ca3af) transparent;
 }
 
+/* Horizontal scrollbar */
 article pre code::-webkit-scrollbar,
 .prose pre code::-webkit-scrollbar,
 .md-typeset pre code::-webkit-scrollbar {
   height: 6px;
+  width: 6px;
 }
 
 article pre code::-webkit-scrollbar-track,
@@ -304,6 +309,13 @@ article pre code::-webkit-scrollbar-thumb:hover,
   background: var(--foreground, #9ca3af);
 }
 
+/* Scrollbar corner (when both scrollbars are present) */
+article pre code::-webkit-scrollbar-corner,
+.prose pre code::-webkit-scrollbar-corner,
+.md-typeset pre code::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* ========================================
    Dark Mode
    ======================================== */
@@ -312,9 +324,9 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article code:not(pre code),
 .dark .prose code:not(pre code),
 .dark .md-typeset code:not(pre code),
-[data-theme="dark"] article code:not(pre code),
-[data-theme="dark"] .prose code:not(pre code),
-[data-theme="dark"] .md-typeset code:not(pre code) {
+.dark article code:not(pre code),
+.dark .prose code:not(pre code),
+.dark .md-typeset code:not(pre code) {
   background: var(--muted, #1f2937);
   border-color: var(--border, #374151);
   color: var(--foreground, #e5e7eb);
@@ -327,12 +339,12 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article .highlight,
 .dark .prose .highlight,
 .dark .md-typeset .highlight,
-[data-theme="dark"] article pre,
-[data-theme="dark"] .prose pre,
-[data-theme="dark"] .md-typeset pre,
-[data-theme="dark"] article .highlight,
-[data-theme="dark"] .prose .highlight,
-[data-theme="dark"] .md-typeset .highlight {
+.dark article pre,
+.dark .prose pre,
+.dark .md-typeset pre,
+.dark article .highlight,
+.dark .prose .highlight,
+.dark .md-typeset .highlight {
   background: var(--background, #0a0a0a);
   border-color: var(--border, #374151);
 }
@@ -343,9 +355,9 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article .highlight .filename,
 .dark .prose .highlight .filename,
 .dark .md-typeset .highlight .filename,
-[data-theme="dark"] article .highlight .filename,
-[data-theme="dark"] .prose .highlight .filename,
-[data-theme="dark"] .md-typeset .highlight .filename {
+.dark article .highlight .filename,
+.dark .prose .highlight .filename,
+.dark .md-typeset .highlight .filename {
   background: var(--background, #0a0a0a);
   border-bottom-color: var(--border, #374151);
   color: var(--muted-foreground, #9ca3af);
@@ -356,10 +368,10 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article .highlight .linenodiv,
 .dark .prose .highlight .linenos,
 .dark .md-typeset .highlight .linenos,
-[data-theme="dark"] article .highlight .linenos,
-[data-theme="dark"] article .highlight .linenodiv,
-[data-theme="dark"] .prose .highlight .linenos,
-[data-theme="dark"] .md-typeset .highlight .linenos {
+.dark article .highlight .linenos,
+.dark article .highlight .linenodiv,
+.dark .prose .highlight .linenos,
+.dark .md-typeset .highlight .linenos {
   background: rgba(255, 255, 255, 0.02);
   border-right: none;
   color: var(--muted-foreground, #6b7280);
@@ -369,9 +381,9 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article .highlight .hll,
 .dark .prose .highlight .hll,
 .dark .md-typeset .highlight .hll,
-[data-theme="dark"] article .highlight .hll,
-[data-theme="dark"] .prose .highlight .hll,
-[data-theme="dark"] .md-typeset .highlight .hll {
+.dark article .highlight .hll,
+.dark .prose .highlight .hll,
+.dark .md-typeset .highlight .hll {
   background: rgba(255, 213, 0, 0.1);
 }
 
@@ -380,10 +392,10 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article pre .copy-button,
 .dark button.copy-code-button,
 .dark .code-copy-btn,
-[data-theme="dark"] article .highlight .copy-button,
-[data-theme="dark"] article pre .copy-button,
-[data-theme="dark"] button.copy-code-button,
-[data-theme="dark"] .code-copy-btn {
+.dark article .highlight .copy-button,
+.dark article pre .copy-button,
+.dark button.copy-code-button,
+.dark .code-copy-btn {
   background: var(--background, #1f2937);
   border-color: var(--border, #374151);
   color: var(--muted-foreground, #9ca3af);
@@ -393,10 +405,10 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article pre .copy-button:hover,
 .dark button.copy-code-button:hover,
 .dark .code-copy-btn:hover,
-[data-theme="dark"] article .highlight .copy-button:hover,
-[data-theme="dark"] article pre .copy-button:hover,
-[data-theme="dark"] button.copy-code-button:hover,
-[data-theme="dark"] .code-copy-btn:hover {
+.dark article .highlight .copy-button:hover,
+.dark article pre .copy-button:hover,
+.dark button.copy-code-button:hover,
+.dark .code-copy-btn:hover {
   background: var(--muted, #374151);
   color: var(--foreground, #e5e7eb);
 }
@@ -405,9 +417,9 @@ article pre code::-webkit-scrollbar-thumb:hover,
 .dark article pre code::-webkit-scrollbar-thumb,
 .dark .prose pre code::-webkit-scrollbar-thumb,
 .dark .md-typeset pre code::-webkit-scrollbar-thumb,
-[data-theme="dark"] article pre code::-webkit-scrollbar-thumb,
-[data-theme="dark"] .prose pre code::-webkit-scrollbar-thumb,
-[data-theme="dark"] .md-typeset pre code::-webkit-scrollbar-thumb {
+.dark article pre code::-webkit-scrollbar-thumb,
+.dark .prose pre code::-webkit-scrollbar-thumb,
+.dark .md-typeset pre code::-webkit-scrollbar-thumb {
   background: var(--muted-foreground, #4b5563);
 }
 
@@ -428,6 +440,7 @@ article pre code::-webkit-scrollbar-thumb:hover,
   .md-typeset pre code {
     padding: 0.875rem 1rem;
     font-size: 0.75rem;
+    max-height: 400px;
   }
 
   article .highlight .copy-button,

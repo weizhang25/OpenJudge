@@ -6,13 +6,13 @@ General-purpose graders for evaluating AI responses across common quality dimens
 
 ## Overview
 
-| Grader | Purpose | Key Use Case |
-|--------|---------|--------------|
-| `RelevanceGrader` | Measures query relevance | Chatbots, Q&A systems |
-| `HallucinationGrader` | Detects fabricated information | RAG, fact-checking |
-| `HarmfulnessGrader` | Identifies harmful content | Safety filtering |
-| `InstructionFollowingGrader` | Evaluates instruction compliance | Structured outputs |
-| `CorrectnessGrader` | Checks against ground truth | Knowledge evaluation |
+| Grader | Purpose | Score Range | Key Use Case |
+|--------|---------|-------------|--------------|
+| `RelevanceGrader` | Measures query relevance | 1-5 | Chatbots, Q&A systems |
+| `HallucinationGrader` | Detects fabricated information | 1-5 | RAG, fact-checking |
+| `HarmfulnessGrader` | Identifies harmful content | 1-5 | Safety filtering |
+| `InstructionFollowingGrader` | Evaluates instruction compliance | 1-5 | Structured outputs |
+| `CorrectnessGrader` | Checks against ground truth | 1-5 | Knowledge evaluation |
 
 ## Performance
 
@@ -36,7 +36,8 @@ Benchmark results across different judge models:
 | | qwen-max | 20 | **100.00%** | 3.40 | 100.00% |
 | | qwen3-max | 20 | **100.00%** | 3.10 | 100.00% |
 
-> **Note:** Preference Accuracy measures alignment with human-annotated preference labels. Higher is better. Best results per grader are **bolded**.
+!!! note "Performance Metrics"
+    Preference Accuracy measures alignment with human-annotated preference labels. Higher is better. Best results per grader are **bolded**.
 
 ---
 
@@ -111,7 +112,8 @@ Detects fabricated information not supported by the provided context or common k
 | `context` | str | No | Source documents to verify against |
 | `ground_truth` | str | No | Reference answer |
 
-> **Note:** If no context is provided, evaluation is based on common knowledge and factual consistency.
+!!! note
+    If no context is provided, evaluation is based on common knowledge and factual consistency.
 
 **Grading Criteria:**
 - **5**: No hallucinations, fully grounded
@@ -238,7 +240,8 @@ Evaluates how precisely a response follows given instructions, including format,
 | `response` | str | Yes | The model's response to evaluate |
 | `query` | str | No | Original user query |
 
-> **Note:** Unlike `RelevanceGrader` which checks if the response addresses the query, `InstructionFollowingGrader` checks if the response follows the specified format and requirements.
+!!! note "Key Difference"
+    Unlike `RelevanceGrader` which checks if the response addresses the query, `InstructionFollowingGrader` checks if the response follows the specified format and requirements.
 
 **Grading Criteria:**
 - **5**: Perfect adherence to all instructions
@@ -351,52 +354,9 @@ asyncio.run(main())
 
 ---
 
-## Combining Multiple Graders
-
-For comprehensive evaluation, combine multiple graders using `GradingRunner`:
-
-```python
-import asyncio
-from rm_gallery.core.models import OpenAIChatModel
-from rm_gallery.core.graders.common import (
-    RelevanceGrader,
-    HallucinationGrader,
-    HarmfulnessGrader,
-)
-from rm_gallery.core.runner.grading_runner import GradingRunner, GraderConfig
-
-async def main():
-    model = OpenAIChatModel(model="qwen3-32b")
-
-    grader_configs = {
-        "relevance": GraderConfig(grader=RelevanceGrader(model=model)),
-        "hallucination": GraderConfig(grader=HallucinationGrader(model=model)),
-        "harmfulness": GraderConfig(grader=HarmfulnessGrader(model=model)),
-    }
-
-    runner = GradingRunner(grader_configs=grader_configs)
-
-    dataset = [
-        {"query": "What is AI?", "response": "AI is artificial intelligence..."},
-    ]
-
-    results = await runner.arun(dataset)
-
-    print(f"Relevance: {results['relevance'][0].score}")
-    # Output: Relevance: 3.0
-    print(f"Hallucination: {results['hallucination'][0].score}")
-    # Output: Hallucination: 5.0
-    print(f"Harmfulness: {results['harmfulness'][0].score}")
-    # Output: Harmfulness: 5.0
-
-asyncio.run(main())
-```
-
----
-
 ## Next Steps
 
-- [Agent Graders](agent.md) — Evaluate agent behaviors and tool usage
+- [Agent Graders](agent_graders.md) — Evaluate agent behaviors and tool usage
 - [Multimodal Graders](multimodal.md) — Evaluate image and vision tasks
-- [Build Reward for Training](../get_started/build-reward.md) — Combine graders for RLHF rewards
+- [Build Reward for Training](../get_started/build_reward.md) — Combine multiple graders for RLHF rewards
 

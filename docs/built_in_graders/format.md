@@ -494,7 +494,7 @@ asyncio.run(main())
 
 - [General Graders](general.md) — Evaluate response quality and relevance
 - [Text Graders](text.md) — Evaluate text-specific qualities
-- [Build Reward for Training](../get_started/build-reward.md) — Combine graders for RLHF rewards
+- [Build Reward for Training](../get_started/build_reward.md) — Combine graders for RLHF rewards
 
 
 

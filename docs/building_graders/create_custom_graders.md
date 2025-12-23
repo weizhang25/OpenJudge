@@ -1,8 +1,8 @@
 # Create Custom Graders
 Custom graders allow you to define precisely how you want to evaluate AI model responses when built-in evaluation tools don't meet your specific needs. This guide helps you build the right grader for your task by following a structured approach to grader design.
 
-> **Tip:** Before creating custom graders, review the [Core Concepts](../get_started/core_concepts.md) to understand how graders fit into the RM-Gallery ecosystem.
->
+!!! tip
+    Before creating custom graders, review the [Core Concepts](../get_started/core_concepts.md) to understand how graders fit into the RM-Gallery ecosystem.
 
 ## Understanding Your Evaluation Needs
 Before diving into implementation, it's essential to clearly define what you want to evaluate and in what scenario. Consider whether you're measuring objective properties like length and keyword presence or subjective qualities such as helpfulness and coherence. Determine if you need absolute scores or relative rankings, and think about what constitutes a "good" response in your particular use case.
@@ -42,7 +42,15 @@ You can combine approaches—using both LLM-based and rule-based graders—for c
 Once you've determined the appropriate approach and implementation method, you can begin developing your custom grader.
 
 ### Essential Design Principles
-When developing custom graders, ensure they are robust, maintainable, and effective by following core principles. First, establish explicit input/output definitions and implement proper error handling. This ensures your grader behaves predictably even when encountering unexpected inputs. Second, use predictable score ranges across all graders. For binary outcomes, use 0.0 for failure and 1.0 for success. For graded evaluations, stick to a consistent numerical scale, such as 0-1 or 1-5. When producing rankings, assign positive integers starting from 1 for the highest-ranked item.
+
+When developing custom graders, ensure they are robust, maintainable, and effective by following core principles:
+
+!!! tip "Core Design Principles"
+    1. **Explicit Definitions**: Establish clear input/output definitions and implement proper error handling
+    2. **Predictable Scoring**: Use consistent score ranges:
+        - Binary outcomes: 0.0 (failure) to 1.0 (success)
+        - Graded evaluations: 0-1 or 1-5 scale
+        - Rankings: Positive integers starting from 1 (highest rank)
 
 ```python
 async def evaluate_helpfulness(query: str, response: str) -> GraderScore:
@@ -72,7 +80,14 @@ async def evaluate_helpfulness(query: str, response: str) -> GraderScore:
 ```
 
 ### LLM-based Grader Implementation
-To create effective LLM-based graders, establish the LLM as an expert evaluator with clear role definition, provide detailed instructions on what to evaluate and how to score, include a scoring rubric that defines score meanings, and specify the exact JSON structure for responses as output format.
+
+To create effective LLM-based graders:
+
+!!! info "LLM Grader Components"
+    - **Role Definition**: Establish the LLM as an expert evaluator
+    - **Clear Instructions**: Provide detailed guidance on what to evaluate and how to score
+    - **Scoring Rubric**: Define what each score means
+    - **Output Format**: Specify the exact JSON structure for responses
 
 ```python
 from rm_gallery.core.graders.llm_grader import LLMGrader
@@ -111,9 +126,11 @@ helpfulness_grader = LLMGrader(
 )
 ```
 
-Incorporate examples of good and poor responses when possible to improve consistency.
+!!! tip
+    Incorporate examples of good and poor responses when possible to improve consistency.
 
 #### Listwise LLM-based Example: Response Comparator
+
 For comparative evaluations, you can create graders that directly compare multiple responses:
 
 ```python
@@ -145,7 +162,14 @@ comparison_grader = LLMGrader(
 ```
 
 ### Rule-based Grader Implementation
-Effective rule-based graders should have transparent logic, modular design, edge case handling, and consistent scoring.
+
+!!! info "Rule-based Grader Best Practices"
+    Effective rule-based graders should have:
+    
+    - **Transparent Logic**: Clear, understandable evaluation rules
+    - **Modular Design**: Separate concerns for maintainability
+    - **Edge Case Handling**: Robust error handling
+    - **Consistent Scoring**: Predictable score ranges
 
 #### Pointwise Rule-based Example: Content Quality Checker
 ```python
@@ -202,7 +226,13 @@ content_quality_grader = FunctionGrader(
 )
 ```
 
-When developing rule-based graders, consider techniques like using compiled regex for complex pattern matching, assigning different weights to criteria through weighted scoring, defining clear pass/fail thresholds, and combining multiple simple metrics into complex evaluations.
+!!! tip "Advanced Techniques"
+    When developing rule-based graders, consider:
+    
+    - **Compiled Regex**: Use for complex pattern matching
+    - **Weighted Scoring**: Assign different weights to criteria
+    - **Clear Thresholds**: Define explicit pass/fail boundaries
+    - **Metric Combination**: Combine multiple simple metrics into complex evaluations
 
 #### Listwise Rule-based Example: Multi-factor Ranker
 ```python
@@ -260,20 +290,20 @@ multi_factor_grader = FunctionGrader(
 ## Validating Your Custom Graders
 After implementing your custom grader, it's crucial to validate that it effectively measures what you intend to measure and produces reliable results. Proper validation ensures your grader performs as expected and produces meaningful results.
 
-For comprehensive guidance on validating your graders and generating detailed validation reports, please refer to the [Grader Validation](../running_graders/generate_validation_reports.md) documentation. This document covers statistical analysis techniques for understanding grader behavior, validation against ground truth data, error analysis to identify specific weaknesses, and building comprehensive validation strategies.
+For comprehensive guidance on validating your graders and generating detailed validation reports, please refer to the [Grader Validation](../running_graders/evaluation_reports.md) documentation. This document covers statistical analysis techniques for understanding grader behavior, validation against ground truth data, error analysis to identify specific weaknesses, and building comprehensive validation strategies.
 
 The validation process helps you ensure your grader produces accurate results, measure consistency and reliability, identify potential biases in evaluation, and optimize grader performance based on empirical evidence.
 
 ## Running Your Custom Graders
-Once you've built and validated your custom graders, you can run them using the [GradingRunner](../running_graders/run_grading_tasks.md). This component orchestrates the execution of multiple graders across your dataset, handles concurrency, transforms data as needed, and organizes the results for analysis.
+Once you've built and validated your custom graders, you can run them using the [GradingRunner](../running_graders/run_tasks.md). This component orchestrates the execution of multiple graders across your dataset, handles concurrency, transforms data as needed, and organizes the results for analysis.
 
 When running graders, focus on configuring data mappers to connect your dataset fields with grader inputs, setting concurrency levels for optimal performance, combining results with aggregators for comprehensive scoring, and handling errors gracefully to prevent complete task failures.
 
 ## Next Steps
 Now that you understand how to build, validate, and run custom graders for your specific needs:
 
-+ 🚀 [Run grading tasks](../running_graders/run_grading_tasks.md) to evaluate your models at scale
-+ 📈 [Validate your graders](../running_graders/generate_validation_reports.md) to ensure consistent and reliable results
++ 🚀 [Run grading tasks](../running_graders/run_tasks.md) to evaluate your models at scale
++ 📈 [Validate your graders](../running_graders/evaluation_reports.md) to ensure consistent and reliable results
 + ⚙️ [Generate graders from data](generate_graders_from_data.md) to automate creation of evaluation criteria
-+ 💪 [Train a grader](train_a_grader/) to build a reward model from your custom evaluations
++ 💪 [Train a grader](training/overview.md) to build a reward model from your custom evaluations
 

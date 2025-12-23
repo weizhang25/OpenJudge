@@ -288,14 +288,14 @@ article .tabbed-set.tabbed-alternate .copy-button.copied {
    ======================================== */
 
 .dark article .tabbed-set.tabbed-alternate,
-[data-theme="dark"] article .tabbed-set.tabbed-alternate {
+.dark article .tabbed-set.tabbed-alternate {
   background: var(--background, #0a0a0a) !important;
   border: 1px solid var(--border, #374151) !important;
 }
 
 /* Special styling for Workflow tabs in dark mode - no border */
 .dark article .tabbed-set.tabbed-alternate:has(.workflow),
-[data-theme="dark"] article .tabbed-set.tabbed-alternate:has(.workflow) {
+.dark article .tabbed-set.tabbed-alternate:has(.workflow) {
   border: none !important;
   background: transparent !important;
 }
@@ -329,15 +329,15 @@ article .tabbed-set.tabbed-alternate .copy-button.copied {
 }
 
 .dark article .tabbed-set.tabbed-alternate .tabbed-block pre,
-[data-theme="dark"] article .tabbed-set.tabbed-alternate .tabbed-block pre {
+.dark article .tabbed-set.tabbed-alternate .tabbed-block pre {
   background: transparent !important;
   border: none !important;
 }
 
 .dark article .tabbed-set.tabbed-alternate .tabbed-block .highlight,
 .dark article .tabbed-set.tabbed-alternate .tabbed-block .codehilite,
-[data-theme="dark"] article .tabbed-set.tabbed-alternate .tabbed-block .highlight,
-[data-theme="dark"] article .tabbed-set.tabbed-alternate .tabbed-block .codehilite {
+.dark article .tabbed-set.tabbed-alternate .tabbed-block .highlight,
+.dark article .tabbed-set.tabbed-alternate .tabbed-block .codehilite {
   border: none !important;
 }
 

@@ -416,7 +416,7 @@ html {
   /* Dark mode mobile sidebar */
   .dark .md-sidebar--primary,
   .dark nav.sidebar,
-  [data-theme="dark"] .md-sidebar--primary {
+  .dark .md-sidebar--primary {
     background: var(--background, #111827);
     border-right-color: var(--border, #374151);
   }
@@ -961,18 +961,18 @@ article img,
 
 @media (max-width: 639px) {
   .dark .mobile-nav-overlay,
-  [data-theme="dark"] .mobile-nav-overlay {
+  .dark .mobile-nav-overlay {
     background: rgba(0, 0, 0, 0.7);
   }
 
   /* Dark mode scroll shadows */
   .dark .table-responsive::before,
-  [data-theme="dark"] .table-responsive::before {
+  .dark .table-responsive::before {
     background: linear-gradient(to right, var(--background, #111827) 0%, transparent 100%);
   }
 
   .dark .table-responsive::after,
-  [data-theme="dark"] .table-responsive::after {
+  .dark .table-responsive::after {
     background: linear-gradient(to left, var(--background, #111827) 0%, transparent 100%);
   }
 }

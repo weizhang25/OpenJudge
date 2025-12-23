@@ -18,9 +18,6 @@ article details,
 }
 
 /* Dark mode support */
-[data-theme="dark"] article details,
-[data-theme="dark"] .prose details,
-[data-theme="dark"] .md-typeset details,
 .dark article details,
 .dark .prose details,
 .dark .md-typeset details {
@@ -98,27 +95,18 @@ article details summary:hover,
 }
 
 /* Dark mode summary */
-[data-theme="dark"] article details summary,
-[data-theme="dark"] .prose details summary,
-[data-theme="dark"] .md-typeset details summary,
 .dark article details summary,
 .dark .prose details summary,
 .dark .md-typeset details summary {
   background: var(--muted, #1f2937);
 }
 
-[data-theme="dark"] article details summary::before,
-[data-theme="dark"] .prose details summary::before,
-[data-theme="dark"] .md-typeset details summary::before,
 .dark article details summary::before,
 .dark .prose details summary::before,
 .dark .md-typeset details summary::before {
   background-color: var(--foreground, #f9fafb);
 }
 
-[data-theme="dark"] article details summary:hover,
-[data-theme="dark"] .prose details summary:hover,
-[data-theme="dark"] .md-typeset details summary:hover,
 .dark article details summary:hover,
 .dark .prose details summary:hover,
 .dark .md-typeset details summary:hover {
@@ -132,9 +120,6 @@ article details[open] summary,
   border-bottom-color: var(--border, #e5e7eb);
 }
 
-[data-theme="dark"] article details[open] summary,
-[data-theme="dark"] .prose details[open] summary,
-[data-theme="dark"] .md-typeset details[open] summary,
 .dark article details[open] summary,
 .dark .prose details[open] summary,
 .dark .md-typeset details[open] summary {

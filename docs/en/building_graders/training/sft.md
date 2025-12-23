@@ -432,7 +432,7 @@ cd sft
 bash sft_rm.sh
 
 # Step 2: Use SFT checkpoint for Bradley-Terry
-cd ../bradley-terry
+cd ../bradley_terry
 MODEL_PATH=../sft/checkpoints/qwen-sft-final
 bash run_bt.sh
 
@@ -533,7 +533,7 @@ python prepare_reward_data.py \
     --output ./reward_data
 
 # 4. Bradley-Terry training (using SFT checkpoint)
-cd ../bradley-terry
+cd ../bradley_terry
 MODEL_PATH=../sft/checkpoints/sft-final
 bash run_bt.sh
 
@@ -567,8 +567,8 @@ python evaluate_pipeline.py \
 
 ## Next Steps
 
-- [Bradley-Terry Training](bradley-terry.md) — Train with preference pairs after SFT
-- [Generative Pointwise](generative-pointwise.md) — Score-based training after SFT
-- [Generative Pairwise](generative-pairwise.md) — Comparison training after SFT
+- [Bradley-Terry Training](bradley_terry.md) — Train with preference pairs after SFT
+- [Generative Pointwise](generative_pointwise.md) — Score-based training after SFT
+- [Generative Pairwise](generative_pairwise.md) — Comparison training after SFT
 - [Training Overview](overview.md) — Complete training strategy guide
 

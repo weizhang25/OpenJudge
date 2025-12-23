@@ -29,6 +29,8 @@
   transition: all 0.25s ease;
   background: var(--md-default-bg-color, #fff);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  display: block;
 }
 
 .feature-card:hover {
@@ -51,6 +53,8 @@
   transition: all 0.25s ease;
   background: var(--md-default-bg-color, #fff);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  display: block;
 }
 
 .feature-card-sm:hover {
@@ -92,6 +96,7 @@
   flex-wrap: nowrap !important;
   margin-bottom: 12px;
   white-space: nowrap;
+  pointer-events: none;
 }
 
 .card-header h3 {
@@ -100,6 +105,7 @@
   font-weight: 600;
   white-space: nowrap !important;
   display: inline !important;
+  pointer-events: none;
 }
 
 .card-header-lg h3 {
@@ -115,6 +121,7 @@
   opacity: 0.9;
   transition: all 0.25s ease;
   flex-shrink: 0;
+  pointer-events: none;
 }
 
 .feature-card:hover .card-icon,
@@ -159,10 +166,17 @@
   font-size: 13px;
   opacity: 0.8;
   line-height: 1.6;
+  pointer-events: none;
 }
 
 .card-desc-lg {
   font-size: 14px;
+}
+
+/* Make all children non-interactive so clicks pass through to the link */
+.feature-card *,
+.feature-card-sm * {
+  pointer-events: none;
 }
 
 /* Badge for Work in Progress */
@@ -194,7 +208,7 @@
   margin-bottom: 12px;
   padding: 16px 20px;
   border-radius: 10px;
-  border-left: 4px solid;
+  border: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
@@ -204,32 +218,35 @@
 
 /* Feature 1: Library - Blue */
 .key-features > ul > li:nth-child(1) {
-  border-left-color: #3b82f6;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+  border-color: rgba(59, 130, 246, 0.12);
 }
 
 .key-features > ul > li:nth-child(1):hover {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.04) 100%);
+  border-color: rgba(59, 130, 246, 0.18);
 }
 
 /* Feature 2: Building - Green */
 .key-features > ul > li:nth-child(2) {
-  border-left-color: #10b981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%);
+  border-color: rgba(16, 185, 129, 0.12);
 }
 
 .key-features > ul > li:nth-child(2):hover {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 100%);
+  border-color: rgba(16, 185, 129, 0.18);
 }
 
 /* Feature 3: Integration - Purple */
 .key-features > ul > li:nth-child(3) {
-  border-left-color: #8b5cf6;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.02) 100%);
+  border-color: rgba(139, 92, 246, 0.12);
 }
 
 .key-features > ul > li:nth-child(3):hover {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.04) 100%);
+  border-color: rgba(139, 92, 246, 0.18);
 }
 
 .key-features ul ul {
@@ -243,7 +260,8 @@
   opacity: 0.85;
 }
 
-.key-features ul ul li::before {
+/* Removed arrow decoration for cleaner appearance */
+/* .key-features ul ul li::before {
   content: "›";
   position: absolute;
   left: -16px;
@@ -251,7 +269,6 @@
   opacity: 0.5;
 }
 
-/* Match arrow color to parent feature */
 .key-features > ul > li:nth-child(1) ul li::before {
   color: #3b82f6;
 }
@@ -262,56 +279,77 @@
 
 .key-features > ul > li:nth-child(3) ul li::before {
   color: #8b5cf6;
-}
+} */
 
 /* Dark Mode Adjustments */
-[data-md-color-scheme="slate"] .feature-card,
-[data-md-color-scheme="slate"] .feature-card-sm {
-  background: var(--md-default-bg-color);
-  border-color: var(--md-default-fg-color--lightest);
+.dark .feature-card,
+.dark .feature-card-sm {
+  background: rgba(30, 30, 30, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
-[data-md-color-scheme="slate"] .feature-card:hover,
-[data-md-color-scheme="slate"] .feature-card-sm:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+.dark .feature-card:hover,
+.dark .feature-card-sm:hover {
+  background: rgba(40, 40, 40, 0.8);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-[data-md-color-scheme="slate"] .feature-card-wip {
-  background: var(--md-default-bg-color--light);
-  border-color: var(--md-default-fg-color--light);
+.dark .feature-card-wip {
+  background: rgba(30, 30, 30, 0.4);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-[data-md-color-scheme="slate"] .key-features {
-  background: var(--md-default-bg-color);
+.dark .key-features {
+  background: rgba(255, 255, 255, 0.02);
 }
 
-[data-md-color-scheme="slate"] .key-features > ul > li:nth-child(1) {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%);
+/* Feature 1: Library - Blue (Dark Mode) */
+.dark .key-features > ul > li:nth-child(1) {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0.05) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-[data-md-color-scheme="slate"] .key-features > ul > li:nth-child(2) {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+.dark .key-features > ul > li:nth-child(1):hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.28) 0%, rgba(59, 130, 246, 0.08) 100%);
+  border-color: rgba(59, 130, 246, 0.35);
 }
 
-[data-md-color-scheme="slate"] .key-features > ul > li:nth-child(3) {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+/* Feature 2: Building - Green (Dark Mode) */
+.dark .key-features > ul > li:nth-child(2) {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-[data-md-color-scheme="slate"] .key-features > ul > li:nth-child(1):hover {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.22) 0%, transparent 100%);
+.dark .key-features > ul > li:nth-child(2):hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border-color: rgba(16, 185, 129, 0.35);
 }
 
-[data-md-color-scheme="slate"] .key-features > ul > li:nth-child(2):hover {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, transparent 100%);
+/* Feature 3: Integration - Purple (Dark Mode) */
+.dark .key-features > ul > li:nth-child(3) {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
-[data-md-color-scheme="slate"] .key-features > ul > li:nth-child(3):hover {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.22) 0%, transparent 100%);
+.dark .key-features > ul > li:nth-child(3):hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.28) 0%, rgba(139, 92, 246, 0.08) 100%);
+  border-color: rgba(139, 92, 246, 0.35);
 }
 
-[data-md-color-scheme="slate"] .badge-wip {
-  background-color: rgba(255, 193, 7, 0.2);
+.dark .badge-wip {
+  background-color: rgba(255, 193, 7, 0.25);
   color: #ffc107;
+}
+
+/* Ensure text readability in dark mode */
+.dark .key-features ul ul li {
+  opacity: 0.9;
+}
+
+.dark .key-features strong,
+.dark .key-features b {
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* Card with arrow indicator */

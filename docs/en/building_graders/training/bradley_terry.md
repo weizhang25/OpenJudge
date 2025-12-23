@@ -138,7 +138,7 @@ trainer:
 **Single-node, multi-GPU:**
 
 ```bash
-cd tutorials/cookbooks/training_reward_model/bradley-terry
+cd tutorials/cookbooks/training_reward_model/bradley_terry
 
 # Edit run_bt.sh with your configuration
 export N_GPUS_PER_NODE=8
@@ -406,8 +406,8 @@ optim:
 
 ## Next Steps
 
-- [Generative Pointwise](generative-pointwise.md) — Train with absolute score labels
-- [Generative Pairwise](generative-pairwise.md) — Train with comparative evaluations
+- [Generative Pointwise](generative_pointwise.md) — Train with absolute score labels
+- [Generative Pairwise](generative_pairwise.md) — Train with comparative evaluations
 - [SFT for Reward Models](sft.md) — Pre-train with supervised fine-tuning
 - [Training Overview](overview.md) — Compare all training methods
 

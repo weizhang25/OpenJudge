@@ -1,12 +1,17 @@
-# Select and Rank Models
+# Pairwise Evaluation for Model Selection
 
 Compare multiple model versions using pairwise evaluation to determine which performs best. This approach eliminates the need for absolute scoring by directly comparing responses head-to-head.
 
-**When to use:**
-- Comparing different model versions (v1 vs v2 vs v3)
-- A/B testing prompt variations
-- Selecting the best model for deployment
-- Benchmarking against competitors
+---
+
+## When to Use
+
+Use pairwise evaluation for:
+
+- **Model Selection** — Comparing different model versions (v1 vs v2 vs v3)
+- **A/B Testing** — Testing prompt variations or system configurations
+- **Deployment Decisions** — Selecting the best model for production
+- **Competitive Benchmarking** — Comparing against competitor models
 
 ---
 
@@ -14,15 +19,17 @@ Compare multiple model versions using pairwise evaluation to determine which per
 
 Pairwise evaluation compares every pair of model outputs and determines a winner. The final ranking is based on **win rates** — how often each model wins against others.
 
-```
-Model A vs Model B → Winner: A
-Model A vs Model C → Winner: C
-Model B vs Model C → Winner: B
+!!! example "Pairwise Comparison"
+    ```
+    Model A vs Model B → Winner: A
+    Model A vs Model C → Winner: C
+    Model B vs Model C → Winner: B
 
-Win Rates: A=50%, B=50%, C=50%
-```
+    Win Rates: A=50%, B=50%, C=50%
+    ```
 
-To eliminate position bias, each pair is evaluated twice with swapped order (A vs B and B vs A).
+!!! tip "Eliminating Position Bias"
+    To eliminate position bias, each pair is evaluated twice with swapped order (A vs B and B vs A).
 
 ---
 
@@ -65,7 +72,7 @@ async def main():
 asyncio.run(main())
 ```
 
-**Output:**
+**Expected output:**
 
 ```
 Best: model_v2
@@ -78,7 +85,7 @@ Best: model_v2
 
 ## Step-by-Step Guide
 
-**Step 1: Prepare Comparison Data**
+### Step 1: Prepare Comparison Data
 
 Generate all pairwise combinations from your model outputs:
 
@@ -99,9 +106,10 @@ print(f"Models: {model_names}")
 print(f"Comparisons: {len(dataset)}")  # 6 comparisons for 3 models
 ```
 
-For N models, this generates N×(N-1) comparisons (each pair evaluated twice to eliminate position bias).
+!!! note "Comparison Count"
+    For N models, this generates **N×(N-1)** comparisons (each pair evaluated twice to eliminate position bias).
 
-**Step 2: Run Pairwise Evaluation**
+### Step 2: Run Pairwise Evaluation
 
 Execute the comparisons using an LLM judge:
 
@@ -116,11 +124,13 @@ grader_results = await run_pairwise_evaluation(
 print(f"Completed: {len(grader_results)} evaluations")
 ```
 
-The grader returns:
-- `score=1.0` → Response A wins
-- `score=0.0` → Response B wins
+!!! info "Grader Output Format"
+    The grader returns:
+    
+    - `score=1.0` → Response A wins
+    - `score=0.0` → Response B wins
 
-**Step 3: Analyze and Rank**
+### Step 3: Analyze and Rank
 
 Compute win rates and generate rankings:
 
@@ -150,29 +160,32 @@ The `PairwiseAnalysisResult` contains:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `rankings` | List[Tuple] | Models sorted by win rate (best first) |
-| `win_rates` | Dict[str, float] | Win rate for each model (0.0-1.0) |
-| `win_matrix` | Dict[str, Dict] | Head-to-head win rates |
-| `best_model` | str | Model with highest win rate |
-| `worst_model` | str | Model with lowest win rate |
-| `total_comparisons` | int | Number of pairwise comparisons |
+| `rankings` | `List[Tuple]` | Models sorted by win rate (best first) |
+| `win_rates` | `Dict[str, float]` | Win rate for each model (0.0-1.0) |
+| `win_matrix` | `Dict[str, Dict]` | Head-to-head win rates |
+| `best_model` | `str` | Model with highest win rate |
+| `worst_model` | `str` | Model with lowest win rate |
+| `total_comparisons` | `int` | Number of pairwise comparisons |
 
-**Win Matrix Example:**
-
-```
-           gpt-4    claude   gemini
-gpt-4       --       0.75     0.50
-claude     0.25       --      0.75
-gemini     0.50      0.25      --
-```
-
-This shows gpt-4 beats claude 75% of the time, but only beats gemini 50% of the time.
+!!! example "Win Matrix Interpretation"
+    ```
+               gpt-4    claude   gemini
+    gpt-4       --       0.75     0.50
+    claude     0.25       --      0.75
+    gemini     0.50      0.25      --
+    ```
+    
+    This shows:
+    
+    - gpt-4 beats claude **75%** of the time
+    - gpt-4 beats gemini **50%** of the time
+    - claude beats gemini **75%** of the time
 
 ---
 
 ## Configuration Options
 
-**Concurrency:**
+### Adjusting Concurrency
 
 ```python
 results = await evaluate_task(
@@ -182,7 +195,7 @@ results = await evaluate_task(
 )
 ```
 
-**Custom Judge Model:**
+### Using Custom Judge Model
 
 To use a different judge model, modify `run_pairwise_evaluation()`:
 
@@ -191,6 +204,9 @@ from rm_gallery.core.models import OpenAIChatModel
 
 model = OpenAIChatModel(model="qwen3-32b")  # Your judge model
 ```
+
+!!! tip "Choosing a Judge Model"
+    Use a strong model for judging (e.g., `qwen3-32b`, `gpt-4`) to ensure reliable comparisons. The judge should be at least as capable as the models being evaluated.
 
 ---
 
@@ -240,19 +256,25 @@ analysis = asyncio.run(compare_models())
 
 ---
 
-## Best Practices
+## Tips for Success
 
-1. **Use sufficient models**: At least 3 models for meaningful comparisons
-2. **Consistent instructions**: Use the same task for all models
-3. **Position bias elimination**: The pipeline automatically swaps order
-4. **Adequate concurrency**: Set `max_concurrency` based on your API limits
-5. **Save results**: Use `save_evaluation_results()` for reproducibility
+!!! tip "Best Practices"
+    - **Use sufficient models** — At least 3 models for meaningful comparisons
+    - **Consistent instructions** — Use the same task for all models
+    - **Position bias elimination** — The pipeline automatically swaps order
+    - **Adequate concurrency** — Set `max_concurrency` based on your API limits
+    - **Save results** — Use `save_evaluation_results()` for reproducibility
+
+!!! warning "Common Pitfalls"
+    - Don't compare models on different tasks
+    - Ensure judge model is strong enough for reliable comparisons
+    - Account for API rate limits when setting concurrency
 
 ---
 
 ## Next Steps
 
-- [Refine Data Quality](data-refinement.md) — Filter and improve training data
-- [Build Reward for Training](../get_started/build-reward.md) — Use rankings for RLHF
-- [General Graders](../graders/general.md) — Available evaluation criteria
+- [Refine Data Quality](data_refinement.md) — Filter and improve training data
+- [Build Reward for Training](../get_started/build_reward.md) — Use rankings for RLHF
+- [General Graders](../built_in_graders/general.md) — Available evaluation criteria
 

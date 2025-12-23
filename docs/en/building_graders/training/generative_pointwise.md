@@ -543,8 +543,8 @@ def compute_custom_reward(predicted, true):
 
 ## Next Steps
 
-- [Generative Pairwise](generative-pairwise.md) — Train with comparison preferences
-- [Bradley-Terry Training](bradley-terry.md) — Simpler preference-based approach
+- [Generative Pairwise](generative_pairwise.md) — Train with comparison preferences
+- [Bradley-Terry Training](bradley_terry.md) — Simpler preference-based approach
 - [SFT for Reward Models](sft.md) — Initialize with supervised fine-tuning
 - [Training Overview](overview.md) — Compare training methods
 

@@ -2,7 +2,8 @@
 
 Train models on multi-turn conversation data to establish strong baseline capabilities before specialized reward training. This guide focuses on the SFT training pipeline using the VERL framework.
 
-> **Note:** For an overview of when to use SFT vs. other methods, see [Training Overview](overview.md).
+!!! note
+    For an overview of when to use SFT vs. other methods, see [Training Overview](overview.md).
 
 ---
 
@@ -21,51 +22,52 @@ SFT training expects **Parquet files** with a `messages` column containing multi
 }
 ```
 
-**Supported roles:** `user`, `assistant`, `system` (optional)
+!!! info "Supported Roles"
+    `user`, `assistant`, `system` (optional)
 
 ---
 
 ## Prepare Your Data
 
-### Convert Existing Datasets
+=== "Convert Existing Datasets"
 
-```python
-from datasets import load_dataset
-import pandas as pd
+    ```python
+    from datasets import load_dataset
+    import pandas as pd
 
-# Load and convert ShareGPT-style data
-dataset = load_dataset("anon8231489123/ShareGPT_Vicuna_unfiltered")
+    # Load and convert ShareGPT-style data
+    dataset = load_dataset("anon8231489123/ShareGPT_Vicuna_unfiltered")
 
-def to_messages(example):
-    return {"messages": [
-        {"role": "assistant" if msg["from"] == "gpt" else "user",
-         "content": msg["value"]}
-        for msg in example["conversations"]
-    ]}
+    def to_messages(example):
+        return {"messages": [
+            {"role": "assistant" if msg["from"] == "gpt" else "user", 
+             "content": msg["value"]}
+            for msg in example["conversations"]
+        ]}
 
-train_data = dataset["train"].map(to_messages)
-pd.DataFrame(train_data)[['messages']].to_parquet("./data/sft_train.parquet")
-```
+    train_data = dataset["train"].map(to_messages)
+    pd.DataFrame(train_data)[['messages']].to_parquet("./data/sft_train.parquet")
+    ```
 
-### Create Evaluation-Focused Data
+=== "Create Evaluation-Focused Data"
 
-```python
-import pandas as pd
+    ```python
+    import pandas as pd
 
-conversations = [{
-    "messages": [
-        {"role": "user", "content": "Evaluate: Is 'Python is a language' helpful?"},
-        {"role": "assistant", "content": "Score: 2/4. Correct but lacks detail..."}
-    ]
-}, {
-    "messages": [
-        {"role": "user", "content": "Compare Response A vs B..."},
-        {"role": "assistant", "content": "Preference: B. More comprehensive..."}
-    ]
-}]
+    conversations = [{
+        "messages": [
+            {"role": "user", "content": "Evaluate: Is 'Python is a language' helpful?"},
+            {"role": "assistant", "content": "Score: 2/4. Correct but lacks detail..."}
+        ]
+    }, {
+        "messages": [
+            {"role": "user", "content": "Compare Response A vs B..."},
+            {"role": "assistant", "content": "Preference: B. More comprehensive..."}
+        ]
+    }]
 
-pd.DataFrame(conversations).to_parquet("./data/eval_sft.parquet")
-```
+    pd.DataFrame(conversations).to_parquet("./data/eval_sft.parquet")
+    ```
 
 ---
 
@@ -200,34 +202,34 @@ bash sft_rm.sh
 
 ## Optimization Options
 
-### Long Sequence Training
+=== "Long Sequence Training"
 
-```bash
-ulysses_sequence_parallel_size=8  # Split across 8 GPUs
-data.max_length=16384             # Support 16K tokens
-```
+    ```bash
+    ulysses_sequence_parallel_size=8  # Split across 8 GPUs
+    data.max_length=16384             # Support 16K tokens
+    ```
 
-### Memory Optimization
+=== "Memory Optimization"
 
-```bash
-model.enable_gradient_checkpointing=true  # Reduce memory usage
-use_remove_padding=true                   # Efficient attention
-```
+    ```bash
+    model.enable_gradient_checkpointing=true  # Reduce memory usage
+    use_remove_padding=true                   # Efficient attention
+    ```
 
-### Speed Optimization
+=== "Speed Optimization"
 
-```bash
-model.use_liger=true  # Use optimized Liger kernel
-```
+    ```bash
+    model.use_liger=true  # Use optimized Liger kernel
+    ```
 
 ---
 
 ## Monitor Training
 
-**Key metrics:**
-- `train/loss` — Should decrease (typical: 2.5 → 0.9)
-- `val/loss` — Validation performance
-- `tokens/sec` — Training throughput
+!!! info "Key Metrics"
+    - `train/loss` — Should decrease (typical: 2.5 → 0.9)
+    - `val/loss` — Validation performance
+    - `tokens/sec` — Training throughput
 
 **Logging options:**
 
@@ -263,7 +265,7 @@ result = await grader.aevaluate(query="...", response="...")
 cd sft && bash sft_rm.sh
 
 # Step 2: Continue with reward training
-cd ../bradley-terry
+cd ../bradley_terry
 MODEL_PATH=../sft/checkpoints/qwen-sft-final
 bash run_bt.sh
 ```
@@ -272,10 +274,11 @@ bash run_bt.sh
 
 ## Training Tips
 
-- **Data Quality**: Use diverse, multi-turn conversations; filter low-quality content
-- **Epochs**: Use 1 epoch to avoid overfitting
-- **Sequence Length**: Match your use case (4K-8K for evaluation, 16K+ for documents)
-- **Validation**: Monitor `val/loss` — stop if it plateaus or increases
+!!! tip "Best Practices"
+    - **Data Quality**: Use diverse, multi-turn conversations; filter low-quality content
+    - **Epochs**: Use 1 epoch to avoid overfitting
+    - **Sequence Length**: Match your use case (4K-8K for evaluation, 16K+ for documents)
+    - **Validation**: Monitor `val/loss` — stop if it plateaus or increases
 
 ---
 
@@ -295,7 +298,7 @@ bash sft_rm.sh
 python prepare_reward_data.py --source helpsteer2 --output ./reward_data
 
 # 4. Reward training (using SFT checkpoint)
-cd ../bradley-terry
+cd ../bradley_terry
 MODEL_PATH=../sft/checkpoints/sft-final bash run_bt.sh
 ```
 
@@ -305,8 +308,8 @@ MODEL_PATH=../sft/checkpoints/sft-final bash run_bt.sh
 
 ## Next Steps
 
-- [Bradley-Terry Training](bradley-terry.md) — Train with preference pairs after SFT
-- [Generative Pointwise](generative-pointwise.md) — Score-based training after SFT
-- [Generative Pairwise](generative-pairwise.md) — Comparison training after SFT
+- [Bradley-Terry Training](bradley_terry.md) — Train with preference pairs after SFT
+- [Generative Pointwise](generative_pointwise.md) — Score-based training after SFT
+- [Generative Pairwise](generative_pairwise.md) — Comparison training after SFT
 - [Training Overview](overview.md) — Complete training strategy guide
 

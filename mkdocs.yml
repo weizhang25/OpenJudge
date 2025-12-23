@@ -17,58 +17,47 @@ nav:
   - Overview: index.md
 
   - Get Started:
-      - Introduction: get-started/introduction.md
-      - Quick Start: get-started/quickstart.md
+      - Quick Start: get_started/quickstart.md
       - Evaluate an AI Agent: get_started/evaluate_ai_agents.md
-      - Build Reward for Training: get-started/build-reward.md
-      - Core Concepts: get-started/core-concepts.md
+      - Build Reward for Training: get_started/build_reward.md
+      - Core Concepts: get_started/core_concepts.md
 
   - Built-in Graders:
-      - Overview: graders/overview.md
-      - General Graders: graders/general.md
-      - Agent Graders: built-in_graders/agent_graders.md
-      - Multimodal Graders: graders/multimodal.md
-      - Code & Math Graders: graders/code-math.md
-      - Text Graders: graders/text.md
-      - Format Graders: graders/format.md
+      - Overview: built_in_graders/overview.md
+      - General Graders: built_in_graders/general.md
+      - Agent Graders: built_in_graders/agent_graders.md
+      - Multimodal Graders: built_in_graders/multimodal.md
+      - Code & Math Graders: built_in_graders/code_math.md
+      - Text Graders: built_in_graders/text.md
+      - Format Graders: built_in_graders/format.md
 
   - Building Graders:
-      - Overview: building-graders/overview.md
-      - Create Custom Graders: building-graders/custom-graders.md
+      - Overview: building_graders/overview.md
+      - Create Custom Graders: building_graders/create_custom_graders.md
       - Generate Graders from Data: building_graders/generate_graders_from_data.md
       - Train a Grader:
-          - Overview: building-graders/training/overview.md
-          - Bradley-Terry Training: building-graders/training/bradley-terry.md
-          - Generative (Pointwise): building-graders/training/generative-pointwise.md
-          - Generative (Pairwise): building-graders/training/generative-pairwise.md
-          - SFT for Reward Models: building-graders/training/sft.md
+          - Overview: building_graders/training/overview.md
+          - Bradley-Terry Training: building_graders/training/bradley_terry.md
+          - Generative (Pointwise): building_graders/training/generative_pointwise.md
+          - Generative (Pairwise): building_graders/training/generative_pairwise.md
+          - SFT for Reward Models: building_graders/training/sft.md
 
   - Running Graders:
-      - Run Grading Tasks: running-graders/run-tasks.md
-      - Generate Evaluation Reports: running-graders/evaluation-reports.md
+      - Run Grading Tasks: running_graders/run_tasks.md
+      - Generate Evaluation Reports: running_graders/evaluation_reports.md
 
   - Validating Graders:
-      - Overview: validating-graders/overview.md
-      - Validate on RewardBench2: validating-graders/rewardbench2.md
+      - Overview: validating_graders/overview.md
+      - Validate on RewardBench2: validating_graders/rewardbench2.md
 
   - Applications:
-      - Refine Data Quality: applications/data-refinement.md
-      - Apply Graders in Post-Training: applications/post-training.md
-      - Select and Rank Models: applications/select-rank.md
-
-  - Integrations:
-      - Evaluation Integrations:
-          - Integrate with AgentScope: integrations/evaluation/agentscope.md
-      - RL Reward Integrations:
-          - Integrate with VERL: integrations/rewards/verl.md
-          - Integrate with AS.Tuner: integrations/rewards/astuner.md
+      - Refine Data Quality: applications/data_refinement.md
+      - Pairwise Model Evaluation: applications/select_rank.md
 
   - Community:
       - Contribute to RM Gallery: community/contributing.md
       - Documentation Style Guide: community/style-guide.md
       - Animations Demo: community/animations-demo.md
-      - FAQ: community/faq.md
-      - Changelog: community/changelog.md
 plugins:
   - search:
       lang:

@@ -122,11 +122,11 @@
 .dark .codehilite .kd,
 .dark .codehilite .kr,
 .dark .codehilite .kc,
-[data-theme="dark"] .highlight .k,
-[data-theme="dark"] .highlight .kn,
-[data-theme="dark"] .highlight .kd,
-[data-theme="dark"] .highlight .kr,
-[data-theme="dark"] .highlight .kc {
+.dark .highlight .k,
+.dark .highlight .kn,
+.dark .highlight .kd,
+.dark .highlight .kr,
+.dark .highlight .kc {
   color: #ff7b72;
   font-weight: 500;
 }
@@ -139,10 +139,10 @@
 .dark .codehilite .s1,
 .dark .codehilite .s2,
 .dark .codehilite .se,
-[data-theme="dark"] .highlight .s,
-[data-theme="dark"] .highlight .s1,
-[data-theme="dark"] .highlight .s2,
-[data-theme="dark"] .highlight .se {
+.dark .highlight .s,
+.dark .highlight .s1,
+.dark .highlight .s2,
+.dark .highlight .se {
   color: #a5d6ff;
 }
 
@@ -154,10 +154,10 @@
 .dark .codehilite .c1,
 .dark .codehilite .cm,
 .dark .codehilite .cp,
-[data-theme="dark"] .highlight .c,
-[data-theme="dark"] .highlight .c1,
-[data-theme="dark"] .highlight .cm,
-[data-theme="dark"] .highlight .cp {
+.dark .highlight .c,
+.dark .highlight .c1,
+.dark .highlight .cm,
+.dark .highlight .cp {
   color: #8b949e;
   font-style: italic;
 }
@@ -166,8 +166,8 @@
 .dark .highlight .nc,
 .dark .codehilite .nf,
 .dark .codehilite .nc,
-[data-theme="dark"] .highlight .nf,
-[data-theme="dark"] .highlight .nc {
+.dark .highlight .nf,
+.dark .highlight .nc {
   color: #d2a8ff;
 }
 
@@ -175,8 +175,8 @@
 .dark .highlight .bp,
 .dark .codehilite .nb,
 .dark .codehilite .bp,
-[data-theme="dark"] .highlight .nb,
-[data-theme="dark"] .highlight .bp {
+.dark .highlight .nb,
+.dark .highlight .bp {
   color: #ffa657;
 }
 
@@ -186,9 +186,9 @@
 .dark .codehilite .m,
 .dark .codehilite .mi,
 .dark .codehilite .mf,
-[data-theme="dark"] .highlight .m,
-[data-theme="dark"] .highlight .mi,
-[data-theme="dark"] .highlight .mf {
+.dark .highlight .m,
+.dark .highlight .mi,
+.dark .highlight .mf {
   color: #79c0ff;
 }
 
@@ -196,16 +196,16 @@
 .dark .highlight .ow,
 .dark .codehilite .o,
 .dark .codehilite .ow,
-[data-theme="dark"] .highlight .o,
-[data-theme="dark"] .highlight .ow {
+.dark .highlight .o,
+.dark .highlight .ow {
   color: #ff7b72;
   font-weight: 500;
 }
 
 .dark .highlight .p,
 .dark .codehilite .p,
-[data-theme="dark"] .highlight .p,
-[data-theme="dark"] .codehilite .p {
+.dark .highlight .p,
+.dark .codehilite .p {
   color: #c9d1d9;
 }
 
@@ -213,22 +213,22 @@
 .dark .highlight .nv,
 .dark .codehilite .n,
 .dark .codehilite .nv,
-[data-theme="dark"] .highlight .n,
-[data-theme="dark"] .highlight .nv {
+.dark .highlight .n,
+.dark .highlight .nv {
   color: #c9d1d9;
 }
 
 .dark .highlight .nd,
 .dark .codehilite .nd,
-[data-theme="dark"] .highlight .nd,
-[data-theme="dark"] .codehilite .nd {
+.dark .highlight .nd,
+.dark .codehilite .nd {
   color: #d2a8ff;
 }
 
 .dark .highlight .nn,
 .dark .codehilite .nn,
-[data-theme="dark"] .highlight .nn,
-[data-theme="dark"] .codehilite .nn {
+.dark .highlight .nn,
+.dark .codehilite .nn {
   color: #c9d1d9;
 }
 
@@ -247,8 +247,8 @@
 
 .dark .highlight .hll,
 .dark .codehilite .hll,
-[data-theme="dark"] .highlight .hll,
-[data-theme="dark"] .codehilite .hll {
+.dark .highlight .hll,
+.dark .codehilite .hll {
   background-color: rgba(255, 213, 0, 0.1);
 }
 
@@ -260,8 +260,8 @@
 
 .dark .highlight .err,
 .dark .codehilite .err,
-[data-theme="dark"] .highlight .err,
-[data-theme="dark"] .codehilite .err {
+.dark .highlight .err,
+.dark .codehilite .err {
   color: #ff7b72;
 }
 
@@ -277,8 +277,8 @@
 
 .dark .highlight .language-python .nv,
 .dark .codehilite .language-python .nv,
-[data-theme="dark"] .highlight .language-python .nv,
-[data-theme="dark"] .codehilite .language-python .nv {
+.dark .highlight .language-python .nv,
+.dark .codehilite .language-python .nv {
   color: #c9d1d9;
 }
 
@@ -299,8 +299,8 @@
 
 .dark .highlight .language-json .nd,
 .dark .codehilite .language-json .nd,
-[data-theme="dark"] .highlight .language-json .nd,
-[data-theme="dark"] .codehilite .language-json .nd {
+.dark .highlight .language-json .nd,
+.dark .codehilite .language-json .nd {
   color: #79c0ff;
 }
 

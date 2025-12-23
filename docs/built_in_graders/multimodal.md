@@ -22,7 +22,8 @@ Benchmark results using `qwen-vl-max` as the judge model:
 | **ImageHelpfulnessGrader** | 20 | **80.00%** | 0.18 |
 | **TextToImageGrader** | 20 | 75.00% | 0.26 |
 
-> **Note:** Preference Accuracy measures alignment with human-annotated preference labels. Higher is better.
+!!! note "Performance Metrics"
+    Preference Accuracy measures alignment with human-annotated preference labels. Higher is better.
 
 ---
 
@@ -71,7 +72,8 @@ Evaluates how well images match and relate to their surrounding text context. As
 - **4-6**: Some coherence but connection could be clearer
 - **0-3**: Weak or no coherence, image seems misplaced
 
-> **Note:** Score is normalized to [0, 1]. For multiple images, returns average score.
+!!! note
+    Score is normalized to [0, 1]. For multiple images, returns average score.
 
 **Example:**
 
@@ -131,7 +133,8 @@ Evaluates how helpful images are in aiding readers' understanding of text. Goes 
 - **4-6**: Somewhat helpful but limited value
 - **0-3**: Not helpful or redundant with text
 
-> **Note:** Score is normalized to [0, 1]. For multiple images, returns average score.
+!!! note
+    Score is normalized to [0, 1]. For multiple images, returns average score.
 
 **Example:**
 
@@ -220,52 +223,8 @@ asyncio.run(main())
 
 ---
 
-## Combining Multiple Graders
-
-For comprehensive multimodal evaluation, combine graders using `GradingRunner`:
-
-```python
-import asyncio
-from rm_gallery.core.models import OpenAIChatModel
-from rm_gallery.core.graders.multimodal import (
-    ImageCoherenceGrader,
-    ImageHelpfulnessGrader,
-    MLLMImage,
-)
-from rm_gallery.core.runner.grading_runner import GradingRunner, GraderConfig
-
-async def main():
-    model = OpenAIChatModel(model="qwen-vl-max")
-
-    grader_configs = {
-        "coherence": GraderConfig(grader=ImageCoherenceGrader(model=model)),
-        "helpfulness": GraderConfig(grader=ImageHelpfulnessGrader(model=model)),
-    }
-
-    runner = GradingRunner(grader_configs=grader_configs)
-
-    dataset = [
-        {
-            "response": [
-                "Installation steps:",
-                MLLMImage(url="https://example.com/install_guide.jpg"),
-                "Follow the numbered instructions above.",
-            ]
-        },
-    ]
-
-    results = await runner.arun(dataset)
-
-    print(f"Coherence: {results['coherence'][0].score}")
-    print(f"Helpfulness: {results['helpfulness'][0].score}")
-
-asyncio.run(main())
-```
-
----
-
 ## Next Steps
 
 - [General Graders](general.md) — Evaluate text-based response quality
-- [Build Reward for Training](../get_started/build-reward.md) — Combine graders for RLHF rewards
+- [Build Reward for Training](../get_started/build_reward.md) — Combine multiple graders for RLHF rewards
 

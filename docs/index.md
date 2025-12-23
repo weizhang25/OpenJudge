@@ -27,7 +27,7 @@
 
 <div class="card-grid">
 
-  <a href="./tutorials/agent-evaluation.md" class="feature-card">
+  <a href="get_started/evaluate_ai_agents/" class="feature-card">
     <div class="card-header card-header-lg">
       <img src="https://unpkg.com/lucide-static@latest/icons/bot.svg" class="card-icon card-icon-agent">
       <h3>Evaluate An AI Agent</h3>
@@ -37,7 +37,7 @@
     </p>
   </a>
 
-  <a href="./tutorials/build-rewards.md" class="feature-card">
+  <a href="get_started/build_reward/" class="feature-card">
     <div class="card-header card-header-lg">
       <img src="https://unpkg.com/lucide-static@latest/icons/brain-circuit.svg" class="card-icon card-icon-tool">
       <h3>Build Rewards for Training</h3>
@@ -56,7 +56,7 @@
 
 <div class="card-grid">
 
-  <a href="#agent-graders" class="feature-card">
+  <a href="built_in_graders/agent_graders/" class="feature-card">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/bot.svg" class="card-icon card-icon-agent">
       <h3>Agent</h3>
@@ -66,7 +66,7 @@
     </p>
   </a>
 
-  <a href="#general-graders" class="feature-card">
+  <a href="built_in_graders/general/" class="feature-card">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/globe.svg" class="card-icon card-icon-general">
       <h3>General Tasks</h3>
@@ -76,7 +76,7 @@
     </p>
   </a>
 
-  <a href="#multimodal-graders" class="feature-card">
+  <a href="built_in_graders/multimodal/" class="feature-card">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/image.svg" class="card-icon card-icon-multimodal">
       <h3>Multimodal</h3>
@@ -86,7 +86,7 @@
     </p>
   </a>
 
-  <a href="#math-code-graders" class="feature-card">
+  <a href="built_in_graders/code_math/" class="feature-card">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/calculator.svg" class="card-icon card-icon-math">
       <h3>Math & Code</h3>
@@ -103,7 +103,7 @@
 
 <div class="card-grid">
 
-  <a href="#Customization" class="feature-card-sm">
+  <a href="building_graders/create_custom_graders/" class="feature-card-sm">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/wrench.svg" class="card-icon card-icon-tool">
       <h3>Customization</h3>
@@ -113,7 +113,7 @@
     </p>
   </a>
 
-  <a href="#Data-Driven Rubrics" class="feature-card-sm">
+  <a href="building_graders/generate_graders_from_data/" class="feature-card-sm">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/database.svg" class="card-icon card-icon-data">
       <h3>Data-Driven Rubrics</h3>
@@ -123,7 +123,7 @@
     </p>
   </a>
 
-  <a href="#Trainable Grader" class="feature-card-sm">
+  <a href="building_graders/training/overview/" class="feature-card-sm">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/scale.svg" class="card-icon card-icon-integration">
       <h3>Trainable Judge Model</h3>
@@ -139,25 +139,27 @@
 
 <div class="card-grid">
 
-  <a href="#eval-integrations" class="feature-card">
+  <div class="feature-card-wip">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/bar-chart-3.svg" class="card-icon card-icon-integration">
       <h3>Evaluation Frameworks</h3>
+      <span class="badge-wip">🚧 Work in Progress</span>
     </div>
     <p class="card-desc">
       Seamlessly connect with mainstream platforms like <strong>LangSmith</strong> and <strong>LangFuse</strong>. Streamline your evaluation pipelines and monitor agent performance with flexible APIs.
     </p>
-  </a>
+  </div>
 
-  <a href="#training-integrations" class="feature-card">
+  <div class="feature-card-wip">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/dumbbell.svg" class="card-icon card-icon-tool">
       <h3>Training Frameworks</h3>
+      <span class="badge-wip">🚧 Work in Progress</span>
     </div>
     <p class="card-desc">
       Directly integrate into training loops such as <strong>VERL</strong>. Use Graders as high-quality reward functions for RLHF/RLAIF to align models effectively.
     </p>
-  </a>
+  </div>
 
 </div>
 
@@ -166,7 +168,7 @@
 
 <div class="card-grid">
 
-  <a href="#data-refinement" class="feature-card">
+  <a href="applications/data_refinement/" class="feature-card">
     <div class="card-header">
       <img src="https://unpkg.com/lucide-static@latest/icons/gem.svg" class="card-icon card-icon-data">
       <h3>Data Refinement</h3>

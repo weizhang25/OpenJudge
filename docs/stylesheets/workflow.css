@@ -16,7 +16,7 @@
 }
 
 .dark .workflow-title,
-[data-theme="dark"] .workflow-title {
+.dark .workflow-title {
   color: #f3f4f6;
 }
 
@@ -66,8 +66,8 @@ ol.workflow-steps > li::before {
 
 .dark .workflow ol > li::before,
 .dark ol.workflow-steps > li::before,
-[data-theme="dark"] .workflow ol > li::before,
-[data-theme="dark"] ol.workflow-steps > li::before {
+.dark .workflow ol > li::before,
+.dark ol.workflow-steps > li::before {
   background: #374151;
   border-color: #4b5563;
   color: #d1d5db;
@@ -94,8 +94,8 @@ ol.workflow-steps > li:last-child::after {
 
 .dark .workflow ol > li::after,
 .dark ol.workflow-steps > li::after,
-[data-theme="dark"] .workflow ol > li::after,
-[data-theme="dark"] ol.workflow-steps > li::after {
+.dark .workflow ol > li::after,
+.dark ol.workflow-steps > li::after {
   background: #4b5563;
 }
 
@@ -114,9 +114,9 @@ ol.workflow-steps > li strong:first-child,
 .dark .workflow ol > li strong:first-child,
 .dark ol.workflow-steps > li strong:first-child,
 .dark .workflow-step-title,
-[data-theme="dark"] .workflow ol > li strong:first-child,
-[data-theme="dark"] ol.workflow-steps > li strong:first-child,
-[data-theme="dark"] .workflow-step-title {
+.dark .workflow ol > li strong:first-child,
+.dark ol.workflow-steps > li strong:first-child,
+.dark .workflow-step-title {
   color: #f9fafb;
 }
 
@@ -133,9 +133,9 @@ ol.workflow-steps > li p,
 .dark .workflow ol > li p,
 .dark ol.workflow-steps > li p,
 .dark .workflow-step-desc,
-[data-theme="dark"] .workflow ol > li p,
-[data-theme="dark"] ol.workflow-steps > li p,
-[data-theme="dark"] .workflow-step-desc {
+.dark .workflow ol > li p,
+.dark ol.workflow-steps > li p,
+.dark .workflow-step-desc {
   color: #9ca3af;
 }
 
@@ -154,15 +154,15 @@ ol.workflow-steps a:hover {
 
 .dark .workflow a,
 .dark ol.workflow-steps a,
-[data-theme="dark"] .workflow a,
-[data-theme="dark"] ol.workflow-steps a {
+.dark .workflow a,
+.dark ol.workflow-steps a {
   color: #34d399;
 }
 
 .dark .workflow a:hover,
 .dark ol.workflow-steps a:hover,
-[data-theme="dark"] .workflow a:hover,
-[data-theme="dark"] ol.workflow-steps a:hover {
+.dark .workflow a:hover,
+.dark ol.workflow-steps a:hover {
   color: #6ee7b7;
 }
 
@@ -192,8 +192,8 @@ ol.workflow-steps > li ul li::after {
 
 .dark .workflow ol > li ul li,
 .dark ol.workflow-steps > li ul li,
-[data-theme="dark"] .workflow ol > li ul li,
-[data-theme="dark"] ol.workflow-steps > li ul li {
+.dark .workflow ol > li ul li,
+.dark ol.workflow-steps > li ul li {
   color: #9ca3af;
 }
 
@@ -231,12 +231,12 @@ ol.workflow-steps > li ul li::after {
 }
 
 .dark .workflow-single,
-[data-theme="dark"] .workflow-single {
+.dark .workflow-single {
   border-color: #374151;
 }
 
 .dark .workflow-single .workflow-header,
-[data-theme="dark"] .workflow-single .workflow-header {
+.dark .workflow-single .workflow-header {
   color: #f3f4f6;
   border-bottom-color: #374151;
   background: #1f2937;
