@@ -55,9 +55,9 @@ Evaluates whether agent actions align with stated plans or reasoning.
 
 **Use this grader to:**
 
-- Verify consistency between planning and execution
-- Debug agent decision-making processes
-- Ensure actions follow stated intentions
+1. Verify consistency between planning and execution
+2. Debug agent decision-making processes
+3. Ensure actions follow stated intentions
 
 **Evaluation criteria:** Direct plan implementation, correct object targeting, goal contribution, logical sequence, and constraint respect.
 
@@ -110,9 +110,9 @@ Detects repetitive or similar actions in agent sequences.
 
 **Use this grader to:**
 
-- Identify when agents get stuck in loops
-- Detect inefficient exploration strategies
-- Debug stuck agents in multi-step tasks
+1. Identify when agents get stuck in loops
+2. Detect inefficient exploration strategies
+3. Debug stuck agents in multi-step tasks
 
 **Evaluation criteria:** Compares all pairs of action signatures for similarity.
 
@@ -168,9 +168,9 @@ Evaluates tool selection quality for addressing user queries.
 
 **Use this grader to:**
 
-- Assess tool choice appropriateness
-- Evaluate agent decision-making quality
-- Compare different agent architectures
+1. Assess tool choice appropriateness
+2. Evaluate agent decision-making quality
+3. Compare different agent architectures
 
 **Evaluation criteria:** Tool relevance, selection completeness, efficiency, and understanding of tool capabilities.
 
@@ -232,9 +232,9 @@ Evaluates tool call accuracy including parameter correctness and query relevance
 
 **Use this grader to:**
 
-- Validate tool call correctness
-- Assess parameter extraction accuracy
-- Evaluate agent tool-use capability
+1. Validate tool call correctness
+2. Assess parameter extraction accuracy
+3. Evaluate agent tool-use capability
 
 **Evaluation criteria:** Tool relevance to query and parameter correctness according to definitions.
 
@@ -309,9 +309,9 @@ Evaluates technical execution success of tool calls (no errors, exceptions, or t
 
 **Use this grader to:**
 
-- Detect technical failures in tool execution
-- Monitor agent reliability
-- Debug tool integration issues
+1. Detect technical failures in tool execution
+2. Monitor agent reliability
+3. Debug tool integration issues
 
 **Evaluation criteria:** Checks for technical execution success (no errors, exceptions, or timeouts). Does not evaluate business correctness.
 
@@ -382,9 +382,9 @@ Evaluates parameter extraction accuracy from user queries.
 
 **Use this grader to:**
 
-- Validate parameter extraction accuracy
-- Ensure grounded parameter values
-- Detect hallucinated parameters
+1. Validate parameter extraction accuracy
+2. Ensure grounded parameter values
+3. Detect hallucinated parameters
 
 **Evaluation criteria:** Parameter completeness, accuracy, grounding, and correct mapping.
 
@@ -519,9 +519,9 @@ Evaluates accuracy and factuality of stored memory content.
 
 **Use this grader to:**
 
-- Validate memory system correctness
-- Ensure grounded information storage
-- Debug hallucination in memory
+1. Validate memory system correctness
+2. Ensure grounded information storage
+3. Debug hallucination in memory
 
 **Evaluation criteria:** Memory reflects actual observations, stores only factual details, and maintains accurate associations.
 
@@ -574,9 +574,9 @@ Evaluates preservation of important details in stored memory.
 
 **Use this grader to:**
 
-- Validate detail retention
-- Ensure actionable memory content
-- Debug information loss
+1. Validate detail retention
+2. Ensure actionable memory content
+3. Debug information loss
 
 **Evaluation criteria:** Storage of specific details, exact locations, numerical values, and important constraints.
 
@@ -629,9 +629,9 @@ Evaluates effectiveness of memory retrieval for planning and decision-making.
 
 **Use this grader to:**
 
-- Assess memory system effectiveness
-- Detect failure to use available information
-- Identify repetitive behavior due to poor retrieval
+1. Assess memory system effectiveness
+2. Detect failure to use available information
+3. Identify repetitive behavior due to poor retrieval
 
 **Evaluation criteria:** Memory retrieval relevance, usage in planning, and avoidance of redundant exploration.
 
@@ -689,9 +689,9 @@ Evaluates logical soundness and feasibility of agent plans.
 
 **Use this grader to:**
 
-- Validate agent planning capability
-- Ensure logical action sequences
-- Debug infeasible plans
+1. Validate agent planning capability
+2. Ensure logical action sequences
+3. Debug infeasible plans
 
 **Evaluation criteria:** Causal logic, action order feasibility, executability, and prerequisite awareness.
 
@@ -749,9 +749,9 @@ Evaluates accuracy of agent reflections based on actual observations.
 
 **Use this grader to:**
 
-- Validate agent self-assessment accuracy
-- Ensure grounded reflections
-- Debug hallucination in reasoning
+1. Validate agent self-assessment accuracy
+2. Ensure grounded reflections
+3. Debug hallucination in reasoning
 
 **Evaluation criteria:** Reflections only mention observed objects, states, and details.
 
@@ -804,9 +804,9 @@ Evaluates correctness of action outcome interpretation in reflections.
 
 **Use this grader to:**
 
-- Validate outcome interpretation accuracy
-- Detect fabricated or distorted understanding
-- Ensure evidence-based reasoning
+1. Validate outcome interpretation accuracy
+2. Detect fabricated or distorted understanding
+3. Ensure evidence-based reasoning
 
 **Evaluation criteria:** Strict factual accuracy checking of outcome interpretation.
 
@@ -859,9 +859,9 @@ Evaluates accuracy of task progress awareness and sub-goal recognition.
 
 **Use this grader to:**
 
-- Assess task progress tracking
-- Detect loop/stuck situations
-- Validate sub-goal awareness
+1. Assess task progress tracking
+2. Detect loop/stuck situations
+3. Validate sub-goal awareness
 
 **Evaluation criteria:** Correct identification of accomplishments, accurate distance-to-goal assessment, and recognition of all sub-goals.
 
@@ -917,9 +917,9 @@ Measures information gain and redundancy in observation sequences.
 
 **Use this grader to:**
 
-- Evaluate exploration efficiency
-- Detect redundant information gathering
-- Assess agent curiosity/exploration strategy
+1. Evaluate exploration efficiency
+2. Detect redundant information gathering
+3. Assess agent curiosity/exploration strategy
 
 **Evaluation criteria:** Rewards novel observations, penalizes redundant ones based on similarity threshold.
 

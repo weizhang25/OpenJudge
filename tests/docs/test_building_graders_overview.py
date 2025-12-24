@@ -1,5 +1,5 @@
 """
-Test code examples from docs/building-graders/overview.md
+Test code examples from docs/building_graders/overview.md
 """
 
 import pytest

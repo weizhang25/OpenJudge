@@ -1,5 +1,5 @@
 """
-Test code examples from docs/building-graders/custom-graders.md
+Test code examples from docs/building_graders/custom-graders.md
 """
 
 import json

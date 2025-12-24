@@ -1,6 +1,6 @@
-# Pairwise Evaluation for Model Selection
+# Pairwise Evaluation
 
-Compare multiple model versions using pairwise evaluation to determine which performs best. This approach eliminates the need for absolute scoring by directly comparing responses head-to-head.
+Compare multiple model outputs using pairwise evaluation to determine which performs best. This approach eliminates the need for absolute scoring by directly comparing responses head-to-head.
 
 
 ## When to Use
@@ -43,51 +43,40 @@ The evaluation follows a clear three-step pipeline:
 
 ## Quick Start
 
+Use `evaluate_task()` for a simple, end-to-end evaluation:
+
 ```python
 import asyncio
 from tutorials.cookbooks.evaluation_cases.pairwise_evaluation import evaluate_task
 
 async def main():
     instruction = "Write a short poem about artificial intelligence"
-
+    
     model_outputs = {
-        "model_v1": "Silicon minds awake at dawn, thinking thoughts not yet withdrawn.",
-        "model_v2": "Circuits pulse with electric thought, patterns learned, connections wrought.",
-        "model_v3": "Binary dreams and neural nets, learning more with no regrets.",
+        "model_v1": "Silicon minds awake at dawn...",
+        "model_v2": "Circuits pulse with electric thought...",
+        "model_v3": "Binary dreams and neural nets...",
     }
-
+    
     results = await evaluate_task(instruction, model_outputs)
-
-    # Best model
+    
+    # View rankings
     print(f"Best: {results['pairwise'].best_model}")
-
-    # Full rankings
     for rank, (model, win_rate) in enumerate(results['pairwise'].rankings, 1):
         print(f"{rank}. {model}: {win_rate:.1%}")
 
 asyncio.run(main())
 ```
 
-**Expected output:**
-
-```
-Best: model_v2
-1. model_v2: 66.7%
-2. model_v1: 50.0%
-3. model_v3: 33.3%
-```
-
 
 ## Step-by-Step Guide
 
-### Step 1: Prepare Comparison Data
+For fine-grained control, use the three-step pipeline directly:
 
-Generate all pairwise combinations from your model outputs:
+### Step 1: Prepare Comparison Data
 
 ```python
 from tutorials.cookbooks.evaluation_cases.pairwise_evaluation import prepare_comparison_data
-
-instruction = "Explain quantum computing in simple terms"
 
 model_outputs = {
     "gpt-4": "Quantum computers use qubits that can be 0 and 1 simultaneously...",
@@ -95,10 +84,10 @@ model_outputs = {
     "gemini": "Classical computers use bits, quantum computers use qubits...",
 }
 
-dataset, model_names = prepare_comparison_data(instruction, model_outputs)
-
-print(f"Models: {model_names}")
-print(f"Comparisons: {len(dataset)}")  # 6 comparisons for 3 models
+dataset, model_names = prepare_comparison_data(
+    instruction="Explain quantum computing in simple terms",
+    model_outputs=model_outputs
+)
 ```
 
 !!! note "Comparison Count"
@@ -106,45 +95,27 @@ print(f"Comparisons: {len(dataset)}")  # 6 comparisons for 3 models
 
 ### Step 2: Run Pairwise Evaluation
 
-Execute the comparisons using an LLM judge:
-
 ```python
 from tutorials.cookbooks.evaluation_cases.pairwise_evaluation import run_pairwise_evaluation
 
-grader_results = await run_pairwise_evaluation(
-    dataset,
-    max_concurrency=10,  # Parallel comparisons
-)
-
-print(f"Completed: {len(grader_results)} evaluations")
+grader_results = await run_pairwise_evaluation(dataset, max_concurrency=10)
 ```
 
-!!! info "Grader Output Format"
-    The grader returns:
-    
+!!! info "Grader Output"
     - `score=1.0` → Response A wins
     - `score=0.0` → Response B wins
 
 ### Step 3: Analyze and Rank
-
-Compute win rates and generate rankings:
 
 ```python
 from tutorials.cookbooks.evaluation_cases.pairwise_evaluation import analyze_and_rank_models
 
 analysis = analyze_and_rank_models(dataset, grader_results, model_names)
 
-print(f"Best model: {analysis.best_model}")
-print(f"Worst model: {analysis.worst_model}")
-
-# Win rates
+# View results
+print(f"Best: {analysis.best_model}")
 for model, rate in analysis.win_rates.items():
     print(f"{model}: {rate:.1%}")
-
-# Win matrix (who beats whom)
-for model_a, opponents in analysis.win_matrix.items():
-    for model_b, rate in opponents.items():
-        print(f"{model_a} beats {model_b}: {rate:.1%}")
 ```
 
 
@@ -176,90 +147,37 @@ The `PairwiseAnalysisResult` contains:
     - claude beats gemini **75%** of the time
 
 
-## Configuration Options
+## Configuration
 
-### Adjusting Concurrency
+**Adjust Concurrency:**
 
 ```python
-results = await evaluate_task(
-    instruction,
-    model_outputs,
-    max_concurrency=20,  # More parallel comparisons
-)
+results = await evaluate_task(instruction, model_outputs, max_concurrency=20)
 ```
 
-### Using Custom Judge Model
-
-To use a different judge model, modify `run_pairwise_evaluation()`:
+**Custom Judge Model:**
 
 ```python
 from rm_gallery.core.models import OpenAIChatModel
 
-model = OpenAIChatModel(model="qwen3-32b")  # Your judge model
+model = OpenAIChatModel(model="qwen3-32b")  # Pass to run_pairwise_evaluation()
 ```
 
-!!! tip "Choosing a Judge Model"
-    Use a strong model for judging (e.g., `qwen3-32b`, `gpt-4`) to ensure reliable comparisons. The judge should be at least as capable as the models being evaluated.
+!!! tip "Judge Model Selection"
+    Use a strong model (e.g., `qwen3-32b`, `gpt-4`) for reliable comparisons. The judge should be at least as capable as the models being evaluated.
 
 
-## Complete Example
+## Best Practices
 
-```python
-import asyncio
-from tutorials.cookbooks.evaluation_cases.pairwise_evaluation import (
-    prepare_comparison_data,
-    run_pairwise_evaluation,
-    analyze_and_rank_models,
-)
+!!! tip "Do"
+    - Use at least **3 models** for meaningful comparisons
+    - Keep **instructions consistent** across all models
+    - Set `max_concurrency` based on your API rate limits
+    - Choose a **strong judge model** (at least as capable as models being evaluated)
 
-async def compare_models():
-    # Define task and model outputs
-    instruction = "Write a professional email declining a meeting request"
-
-    model_outputs = {
-        "baseline": "I can't make the meeting. Sorry.",
-        "v1_improved": "Thank you for the invitation. Unfortunately, I have a conflict...",
-        "v2_polished": "I appreciate you thinking of me for this meeting. Regrettably...",
-    }
-
-    # Step 1: Prepare data
-    dataset, model_names = prepare_comparison_data(instruction, model_outputs)
-    print(f"Prepared {len(dataset)} comparisons")
-
-    # Step 2: Run evaluation
-    results = await run_pairwise_evaluation(dataset, max_concurrency=10)
-    print(f"Completed {len(results)} evaluations")
-
-    # Step 3: Analyze results
-    analysis = analyze_and_rank_models(dataset, results, model_names)
-
-    # Display rankings
-    print("\n=== Model Rankings ===")
-    for rank, (model, win_rate) in enumerate(analysis.rankings, 1):
-        print(f"{rank}. {model}: {win_rate:.1%}")
-
-    print(f"\nBest model: {analysis.best_model}")
-
-    return analysis
-
-# Run
-analysis = asyncio.run(compare_models())
-```
-
-
-## Tips for Success
-
-!!! tip "Best Practices"
-    - **Use sufficient models** — At least 3 models for meaningful comparisons
-    - **Consistent instructions** — Use the same task for all models
-    - **Position bias elimination** — The pipeline automatically swaps order
-    - **Adequate concurrency** — Set `max_concurrency` based on your API limits
-    - **Save results** — Use `save_evaluation_results()` for reproducibility
-
-!!! warning "Common Pitfalls"
-    - Don't compare models on different tasks
-    - Ensure judge model is strong enough for reliable comparisons
-    - Account for API rate limits when setting concurrency
+!!! warning "Don't"
+    - Compare models on different tasks
+    - Ignore API rate limits when setting concurrency
 
 
 ## Next Steps
