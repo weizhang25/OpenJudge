@@ -46,7 +46,7 @@ Executes generated code against test cases to verify functional correctness. Eva
 
 === "Quick Code Quality Check"
 
-    ```python
+    ````python
     import asyncio
     from rm_gallery.core.graders.code import SyntaxCheckGrader, CodeStyleGrader
     from rm_gallery.core.runner.grading_runner import GradingRunner
@@ -59,12 +59,12 @@ Executes generated code against test cases to verify functional correctness. Eva
         })
         
         code_response = '''
-    ```python
-    def fibonacci(n):
-        if n <= 1:
-            return n
-        return fibonacci(n-1) + fibonacci(n-2)
-    ```
+        ```python
+        def fibonacci(n):
+            if n <= 1:
+                return n
+            return fibonacci(n-1) + fibonacci(n-2)
+        ```
         '''
         
         results = await runner.arun([{"response": code_response}])
@@ -73,7 +73,7 @@ Executes generated code against test cases to verify functional correctness. Eva
         print(f"Style Score: {results['style'][0].score}")
 
     asyncio.run(main())
-    ```
+    ````
 
 === "Benchmark Execution Testing"
 
@@ -130,7 +130,7 @@ Validates Python code syntax using Abstract Syntax Tree (AST) parsing. Extracts 
 
 === "Valid Syntax Check"
 
-    ```python
+    ````python
     import asyncio
     from rm_gallery.core.graders.code import SyntaxCheckGrader
 
@@ -138,11 +138,11 @@ Validates Python code syntax using Abstract Syntax Tree (AST) parsing. Extracts 
         grader = SyntaxCheckGrader()
         
         response = '''
-    Here's a function:
-    ```python
-    def greet(name):
-        return f"Hello, {name}!"
-    ```
+        Here's a function:
+        ```python
+        def greet(name):
+            return f"Hello, {name}!"
+        ```
         '''
         
         result = await grader.aevaluate(response=response)
@@ -150,11 +150,11 @@ Validates Python code syntax using Abstract Syntax Tree (AST) parsing. Extracts 
         print(f"Reason: {result.reason}") # Syntax check: 1/1 blocks valid, 0 errors
 
     asyncio.run(main())
-    ```
+    ````
 
 === "Invalid Syntax Detection"
 
-    ```python
+    ````python
     import asyncio
     from rm_gallery.core.graders.code import SyntaxCheckGrader
 
@@ -163,10 +163,10 @@ Validates Python code syntax using Abstract Syntax Tree (AST) parsing. Extracts 
         
         # Missing colon after function definition
         invalid_response = '''
-    ```python
-    def greet(name)
-        return f"Hello, {name}!"
-    ```
+        ```python
+        def greet(name)
+            return f"Hello, {name}!"
+        ```
         '''
         
         result = await grader.aevaluate(response=invalid_response)
@@ -174,7 +174,7 @@ Validates Python code syntax using Abstract Syntax Tree (AST) parsing. Extracts 
         print(f"Errors: {result.metadata['syntax_errors']}")
 
     asyncio.run(main())
-    ```
+    ````
 
 !!! tip "Syntax Validation Best Practice"
     Use `SyntaxCheckGrader` as a fast pre-filter before running more expensive execution graders. This saves computation time by catching obvious errors early.
@@ -210,7 +210,7 @@ Evaluates code style including indentation consistency and naming conventions. C
 
 === "Good Code Style"
 
-    ```python
+    ````python
     import asyncio
     from rm_gallery.core.graders.code import CodeStyleGrader
 
@@ -219,13 +219,13 @@ Evaluates code style including indentation consistency and naming conventions. C
         
         # Proper snake_case naming and consistent indentation
         good_code = '''
-    ```python
-    def calculate_sum(numbers):
-        total = 0
-        for num in numbers:
-            total += num
-        return total
-    ```
+        ```python
+        def calculate_sum(numbers):
+            total = 0
+            for num in numbers:
+                total += num
+            return total
+        ```
         '''
         
         result = await grader.aevaluate(response=good_code)
@@ -233,11 +233,11 @@ Evaluates code style including indentation consistency and naming conventions. C
         print(f"Reason: {result.reason}")
 
     asyncio.run(main())
-    ```
+    ````
 
 === "Poor Code Style"
 
-    ```python
+    ````python
     import asyncio
     from rm_gallery.core.graders.code import CodeStyleGrader
 
@@ -246,13 +246,13 @@ Evaluates code style including indentation consistency and naming conventions. C
         
         # Incorrect PascalCase naming (should be snake_case)
         poor_code = '''
-    ```python
-    def CalculateSum(Numbers):
-        Total = 0
-        for Num in Numbers:
-            Total += Num
-        return Total
-    ```
+        ```python
+        def CalculateSum(Numbers):
+            Total = 0
+            for Num in Numbers:
+                Total += Num
+            return Total
+        ```
         '''
         
         result = await grader.aevaluate(response=poor_code)
@@ -260,7 +260,7 @@ Evaluates code style including indentation consistency and naming conventions. C
         print(f"Details: {result.metadata['details']}")
 
     asyncio.run(main())
-    ```
+    ````
 
 !!! info "Style Checks"
     The grader evaluates:

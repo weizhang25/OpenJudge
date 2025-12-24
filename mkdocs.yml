@@ -35,12 +35,7 @@ nav:
       - Overview: building_graders/overview.md
       - Create Custom Graders: building_graders/create_custom_graders.md
       - Generate Graders from Data: building_graders/generate_graders_from_data.md
-      - Train a Grader:
-          - Overview: building_graders/training/overview.md
-          - Bradley-Terry Training: building_graders/training/bradley_terry.md
-          - Generative (Pointwise): building_graders/training/generative_pointwise.md
-          - Generative (Pairwise): building_graders/training/generative_pairwise.md
-          - SFT for Reward Models: building_graders/training/sft.md
+      - Train Reward Models: building_graders/training/overview.md
 
   - Running Graders:
       - Run Grading Tasks: running_graders/run_tasks.md

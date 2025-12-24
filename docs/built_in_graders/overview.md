@@ -8,8 +8,6 @@ RM-Gallery provides **50+ pre-built graders** for evaluating AI responses across
 
 Get started with RM-Gallery graders in three simple steps: initialize a model, create a grader, and evaluate responses. All graders follow a consistent API design for easy integration.
 
-### Basic Usage
-
 ```python
 import asyncio
 from rm_gallery.core.models import OpenAIChatModel

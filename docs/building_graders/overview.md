@@ -10,9 +10,16 @@ While RM-Gallery provides 50+ pre-built graders, custom graders enable you to ev
 
 ## Building Approaches
 
-RM-Gallery supports three paths for creating custom graders. **Create Custom Graders** takes minutes and works best for quick prototyping with code-based logic or LLM-as-judge patterns. **Generate Graders from Data** takes a few hours and automatically builds rubrics from your evaluation examples, ideal for iterative refinement. **Train Reward Models** requires hours to days but delivers the highest scalability for high-volume evaluation with significantly lower inference costs after the initial training investment.
+RM-Gallery supports three paths for creating custom graders, each optimized for different scenarios.
 
-### Decision Framework
+
+| Approach | Time to Deploy | Data Required | Best For | Cost Profile |
+|----------|---------------|---------------|----------|--------------|
+| **Create Custom Graders** | Minutes | None | Quick prototyping, domain-specific logic | Pay-per-query (API) or free (code-based) |
+| **Generate from Data** | 1-4 hours | 50-500 examples | Iterative refinement, transparent rubrics | Medium setup + pay-per-query |
+| **Train Reward Models** | 1-3 days | 1K-100K pairs | High-volume production (>1M queries/month) | High upfront, 10x lower per-query |
+
+Use this decision tree to choose the right approach based on your data availability and requirements:
 
 ```
                          START
@@ -48,103 +55,32 @@ RM-Gallery supports three paths for creating custom graders. **Create Custom Gra
                 └───────────────────────────────┘
 ```
 
-If you have labeled evaluation data and want automated learning, train a reward model. If you have data but need faster iteration, use the rubric generator. Without data, create custom graders using code-based logic or LLM judges. Custom graders require no data and setup in under an hour. Generated graders need 50-500 examples and take 1-4 hours. Trained models require 1K-100K examples and 1-3 days but offer 10x lower per-query costs and deterministic consistency, though at the expense of flexibility—changing evaluation criteria requires retraining rather than simple prompt edits.
+**Choose based on your situation:**
+
+- **Have labeled data + need automation?** → Train a reward model
+- **Have data + need fast iteration?** → Generate rubrics from data  
+- **No data + need immediate results?** → Create custom graders
+
+### Approach 1: Create Custom Graders
+
+Define evaluation logic using LLM judges or code-based functions with no training required. LLM-based graders use models like `qwen3-32b` with custom prompts for domain-specific criteria. Code-based graders implement deterministic logic—checking response length, keyword presence, format validation, or compliance requirements.
+
+**Learn more:** [Create Custom Graders →](create_custom_graders.md) | [Built-in Graders →](../built_in_graders/overview.md)
 
 
-## Approach 1: Create Custom Graders
+### Approach 2: Generate Graders from Data
 
-Define evaluation logic using LLM judges or code-based functions with no training required. LLM-based graders use models like `qwen3-32b` with custom prompts to evaluate domain-specific criteria (medical accuracy, legal compliance, brand voice). Code-based graders implement deterministic logic—checking response length, keyword presence, format validation, or compliance requirements. Both approaches integrate seamlessly with RM-Gallery's evaluation pipeline.
+Automatically analyze evaluation data to create structured scoring rubrics. Provide 50-500 labeled examples, and the generator extracts patterns to build interpretable criteria. Generated graders produce explicit rubrics that explain scoring decisions, ideal for scenarios requiring transparency and rapid refinement.
 
-```python
-from rm_gallery.core.graders.llm_grader import LLMGrader
-from rm_gallery.core.models import OpenAIChatModel
-
-model = OpenAIChatModel(model="qwen3-32b")
-grader = LLMGrader(
-    name="domain_expert",
-    model=model,
-    template="Evaluate accuracy: {query} | {response}\nReturn JSON: {{\"score\": <0-1>, \"reason\": \"...\"}}"
-)
-```
-
-See **[Create Custom Graders →](create_custom_graders.md)** for complete implementation patterns or explore **[Built-in Graders →](../built_in_graders/overview.md)** to customize existing evaluators.
+**Learn more:** [Generate Graders from Data →](generate_graders_from_data.md)
 
 
-## Approach 2: Generate Graders from Data
+### Approach 3: Train Reward Models
 
-GraderGenerator automatically analyzes your evaluation data to create structured scoring rubrics. Provide labeled examples (query-response pairs with scores), and the generator extracts patterns to build interpretable evaluation criteria. This approach works best when you have 50-500 labeled examples but want faster iteration than model training. The generated graders produce explicit rubrics that explain scoring decisions, making them ideal for scenarios requiring transparency and rapid refinement.
+Train neural networks on preference data to learn evaluation criteria automatically. Supports Bradley-Terry (preference pairs), Generative Pointwise (absolute scores), and Generative Pairwise (comparison decisions). Requires 1K-100K examples and 1-3 days but delivers highly consistent evaluation at 10x lower per-query cost—ideal for high-volume scenarios exceeding 1M queries per month.
 
-```python
-from rm_gallery.core.generator import GraderGenerator
+**Learn more:** [Training Overview →](training/overview.md) | [Bradley-Terry Training →](training/bradley_terry.md)
 
-generator = GraderGenerator(model=OpenAIChatModel(model="qwen3-32b"))
-grader = await generator.generate(
-    eval_cases=[{"query": "Q1", "response": "A1", "score": 0.8}, ...],
-    task_description="Evaluate response helpfulness"
-)
-```
-
-See **[Generate Graders from Data →](generate_graders_from_data.md)** for complete workflow and examples.
-
-
-## Approach 3: Train Reward Models
-
-Train neural networks on preference data to learn evaluation criteria automatically. RM-Gallery supports **Bradley-Terry** training (preference pairs like "Response A > B"), **Generative Pointwise** (absolute scores like "4/5 quality"), and **Generative Pairwise** (comparison decisions). The training workflow involves preparing preference data from human annotations or existing grader outputs, training with VERL's distributed framework (multi-GPU/multi-node support), and deploying the trained model for self-hosted inference. While training requires initial investment (hours to days and sufficient data), the result is highly consistent evaluation at 10x lower per-query cost—ideal for high-volume scenarios exceeding 1M queries per month.
-
-```bash
-# Prepare data, train, and integrate
-python -m rm_gallery.core.generator.export --dataset helpsteer2 --output-dir ./data
-cd tutorials/cookbooks/training_reward_model/bradley_terry && bash run_bt.sh
-
-# Load trained model as grader
-model = OpenAIChatModel(model="./checkpoints/my-reward-model", is_local=True)
-grader = RelevanceGrader(model=model)
-```
-
-Explore **[Training Overview →](training/overview.md)** to compare methods, or start with **[Bradley-Terry Training →](training/bradley_terry.md)** for the most common approach.
-
-
-## Integration with RM-Gallery
-
-All three approaches produce graders that work identically in RM-Gallery's evaluation pipeline. Call `grader.aevaluate()` for single evaluations or use `GradingRunner` for batch processing. You can combine built-in graders, custom LLM judges, and trained models in a single runner to evaluate responses from multiple perspectives simultaneously.
-
-```python
-from rm_gallery.core.runner import GradingRunner
-
-runner = GradingRunner(graders=[RelevanceGrader(), custom_grader, trained_model])
-results = await runner.arun_batch([{"query": "Q1", "response": "A1"}, ...])
-```
-
-
-## Tips for Success
-
-**Custom Graders**: Start with code-based logic before adding LLM judges. Test thoroughly on diverse inputs and implement error handling for production use. Track prompt versions for reproducibility and monitor API costs by setting usage limits.
-
-**Generated Graders**: Prioritize 50-100 high-quality examples over hundreds of poor ones. Include edge cases and failure modes in your dataset. Regenerate rubrics iteratively as you collect more data, and validate on held-out samples to ensure generalization.
-
-**Trained Models**: Focus on data quality over quantity—clean preference data matters more than volume. Hold out 10-20% for validation sets. Start with smaller models (1B-7B parameters) and run short training iterations to validate your setup. Monitor evaluation consistency over time to detect drift.
-
-
-## Complete Example: Build an Evaluation Pipeline
-
-Combine multiple graders for comprehensive assessment. Create a code-based grader for deterministic checks (like length validation), an LLM-based grader for domain-specific accuracy, and optionally add a trained model for learned preferences. Package them in a `GradingRunner` to evaluate multiple responses simultaneously.
-
-```python
-from rm_gallery.core.graders.function_grader import FunctionGrader
-from rm_gallery.core.graders.llm_grader import LLMGrader
-from rm_gallery.core.runner import GradingRunner
-
-# Code-based: length check
-length_grader = FunctionGrader(func=lambda r: GraderScore("length", 1.0 if 50<=len(r)<=500 else 0.5), name="length")
-
-# LLM-based: domain accuracy
-accuracy_grader = LLMGrader(name="accuracy", model=OpenAIChatModel(model="qwen3-32b"), 
-                           template="Rate accuracy: {query}|{response}\nJSON: {{\"score\":<0-1>}}")
-
-# Combine and evaluate
-runner = GradingRunner(graders=[length_grader, accuracy_grader])
-results = await runner.arun_batch([{"query": "Q", "response": "A"}, ...])
-```
 
 
 ## Next Steps

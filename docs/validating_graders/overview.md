@@ -7,9 +7,6 @@ Graders are evaluation systems that judge AI outputs, but they need evaluation t
 **Core Workflow:** Run your grader on test cases with known correct answers → Compare predictions against ground truth → Analyze accuracy and error patterns → Refine and re-validate until quality thresholds are met.
 
 
-## Why Validate?
-
-Validation helps you measure grader accuracy against ground truth, compare different implementations, and identify systematic errors before production deployment. By quantifying agreement with known labels and tracking performance over time, you build confidence that your evaluation pipeline meets quality thresholds.
 
 
 ## How to Validate a Grader?

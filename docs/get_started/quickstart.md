@@ -6,16 +6,17 @@ Get started with RM-Gallery in 5 minutes. This guide walks you through installat
 
 === "pip"
 
-```bash
-pip install rm-gallery
-```
+    ```bash
+    pip install rm-gallery
+    ```
+
 === "From Source"
 
-```bash
-git clone https://github.com/modelscope/RM-Gallery.git
-cd RM-Gallery
-pip install -e .
-```
+    ```bash
+    git clone https://github.com/modelscope/RM-Gallery.git
+    cd RM-Gallery
+    pip install -e .
+    ```
 
 > **Tips:**
 > - RM-Gallery requires Python version >=3.10 and <3.13. For best compatibility, we recommend using Python 3.10 or 3.11.

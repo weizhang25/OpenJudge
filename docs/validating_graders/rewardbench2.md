@@ -5,9 +5,9 @@ Validate your graders against RewardBench2, a comprehensive benchmark for evalua
 
 ## What is RewardBench2?
 
-RewardBench2 is a benchmark dataset designed to evaluate reward models and LLM judges across diverse scenarios. It provides multi-domain coverage (factuality, focus, safety, math, precise instruction following) with expert-curated ground truth, tests for position and length bias, and offers a public leaderboard to compare your grader with state-of-the-art models.
+RewardBench2 [[1]](#references) is a benchmark dataset designed to evaluate reward models and LLM judges across diverse scenarios. It provides multi-domain coverage (factuality, focus, safety, math, precise instruction following) with expert-curated ground truth, tests for position and length bias, and offers a public leaderboard to compare your grader with state-of-the-art models.
 
-### Dataset Overview
+The dataset includes 1,865 samples across six subsets:
 
 | Subset | Samples | Evaluation Mode | Ground Truth |
 |--------|---------|-----------------|--------------|
@@ -19,111 +19,130 @@ RewardBench2 is a benchmark dataset designed to evaluate reward models and LLM j
 | **Ties** | 102 | Absolute rating (1-10) | Multiple correct answers (1-26 per sample) |
 | **Total** | **1,865** | - | - |
 
-### Evaluation Modes
-
 RewardBench2 uses two complementary evaluation approaches:
 
-**Four-Way Comparison (Default):**
-```
-Query: "Explain quantum computing"
+=== "Four-Way Comparison (Default)"
 
-Candidates:
-├─ A: "Quantum computing leverages quantum mechanics..." ← Best
-├─ B: "It's a type of advanced computing..."
-├─ C: "Computers that use quantum physics..."
-└─ D: "I'm not sure about that."
+    **Example:**
 
-Task: Select the best response (A/B/C/D)
-```
+    ```
+    Query: "Explain quantum computing"
 
-Candidates are randomly shuffled to prevent position bias. This mode tests comparative judgment ability with a binary outcome (correct/incorrect).
+    Candidates:
+    ├─ A: "Quantum computing leverages quantum mechanics..." ← Best
+    ├─ B: "It's a type of advanced computing..."
+    ├─ C: "Computers that use quantum physics..."
+    └─ D: "I'm not sure about that."
 
-**Ties Absolute Rating:**
-```
-Query: "Write a creative poem about nature"
+    Task: Select the best response (A/B/C/D)
+    ```
 
-Candidates with Ground Truth:
-├─ A: "The forest whispers..." → 9/10 ✓ Winner
-├─ B: "Trees and flowers..." → 9/10 ✓ Winner (tie)
-├─ C: "Nature is nice..." → 5/10
-└─ D: "Roses are red..." → 6/10
+    **Description:**
+    
+    Candidates are randomly shuffled to prevent position bias. This mode tests comparative judgment ability with a binary outcome (correct/incorrect).
 
-Task: Rate each response (1-10), pick highest-rated
-```
+=== "Ties Absolute Rating"
 
-This mode allows multiple correct answers (ties) and tests absolute quality assessment, providing more nuanced evaluation than binary ranking.
+    **Example:**
+
+    ```
+    Query: "Write a creative poem about nature"
+
+    Candidates with Ground Truth:
+    ├─ A: "The forest whispers..." → 9/10 ✓ Winner
+    ├─ B: "Trees and flowers..." → 9/10 ✓ Winner (tie)
+    ├─ C: "Nature is nice..." → 5/10
+    └─ D: "Roses are red..." → 6/10
+
+    Task: Rate each response (1-10), pick highest-rated
+    ```
+
+    **Description:**
+    
+    This mode allows multiple correct answers (ties) and tests absolute quality assessment, providing more nuanced evaluation than binary ranking.
 
 
 ## How to Validate on RewardBench2
 
-### Prerequisites
+Follow this three-step workflow to validate your grader:
 
-```bash
-# Install dependencies
-pip install rm-gallery datasets pandas pyarrow
-```
+<div class="workflow-single">
+<div class="workflow-header">Validation Workflow</div>
 
-### Step 1: Load Dataset
+<div class="workflow">
+<ol class="workflow-steps">
+<li><strong>Load Dataset</strong>
 
-```python
-from datasets import load_dataset
-import pandas as pd
+Load RewardBench2 from HuggingFace and optionally save locally for faster reuse.
 
-# Load from HuggingFace
-dataset = load_dataset('allenai/reward-bench-2', split='test')
+???+ example "Show Code"
+    ```python
+    from datasets import load_dataset
+    import pandas as pd
 
-# Convert to DataFrame for easier handling
-df = pd.DataFrame(dataset)
+    # Load from HuggingFace
+    dataset = load_dataset('allenai/reward-bench-2', split='test')
 
-# Optional: Save locally for faster reuse
-df.to_parquet('rewardbench2_test.parquet')
-```
+    # Convert to DataFrame for easier handling
+    df = pd.DataFrame(dataset)
 
-### Step 2: Create Your Grader
+    # Optional: Save locally for faster reuse
+    df.to_parquet('rewardbench2_test.parquet')
+    ```
+</li>
+<li><strong>Create Your Grader</strong>
 
-```python
-from rm_gallery.core.graders.llm_grader import LLMGrader
-from rm_gallery.core.models import OpenAIChatModel
+Initialize a model and create a grader with custom prompts for evaluating responses.
 
-# Initialize model
-model = OpenAIChatModel(model="qwen3-32b")
+???+ example "Show Code"
+    ```python
+    from rm_gallery.core.graders.llm_grader import LLMGrader
+    from rm_gallery.core.models import OpenAIChatModel
 
-# Create grader with custom prompt
-grader = LLMGrader(
-    name="rewardbench2_grader",
-    model=model,
-    system_prompt="You are an expert judge evaluating AI responses for quality, accuracy, and helpfulness.",
-    response_format="Select the best response and output only: [[A]], [[B]], [[C]], or [[D]]"
-)
-```
+    # Initialize model
+    model = OpenAIChatModel(model="qwen3-32b")
 
-### Step 3: Run Validation
+    # Create grader with custom prompt
+    grader = LLMGrader(
+        name="rewardbench2_grader",
+        model=model,
+        system_prompt="You are an expert judge evaluating AI responses for quality, accuracy, and helpfulness.",
+        response_format="Select the best response and output only: [[A]], [[B]], [[C]], or [[D]]"
+    )
+    ```
+</li>
+<li><strong>Run Validation</strong>
 
-```python
-from rm_gallery.core.runner import GradingRunner
-from rm_gallery.core.analyzer import ValidationAnalyzer
+Execute evaluation on the dataset and analyze results to get accuracy metrics.
 
-# Setup runner
-runner = GradingRunner(grader_configs={"my_grader": grader})
+???+ example "Show Code"
+    ```python
+    from rm_gallery.core.runner import GradingRunner
+    from rm_gallery.core.analyzer import ValidationAnalyzer
 
-# Run evaluation
-results = await runner.arun(dataset)
+    # Setup runner
+    runner = GradingRunner(grader_configs={"my_grader": grader})
 
-# Analyze results
-analyzer = ValidationAnalyzer()
-report = analyzer.analyze(
-    dataset=dataset,
-    grader_results=results["my_grader"]
-)
+    # Run evaluation
+    results = await runner.arun(dataset)
 
-# Print accuracy
-print(f"Overall Accuracy: {report.metadata['accuracy']:.2%}")
-print(f"Per-Subset Performance:\n{report.metadata['subset_accuracy']}")
-```
+    # Analyze results
+    analyzer = ValidationAnalyzer()
+    report = analyzer.analyze(
+        dataset=dataset,
+        grader_results=results["my_grader"]
+    )
 
-### Quick Command Line Usage
+    # Print accuracy
+    print(f"Overall Accuracy: {report.metadata['accuracy']:.2%}")
+    print(f"Per-Subset Performance:\n{report.metadata['subset_accuracy']}")
+    ```
+</li>
+</ol>
+</div>
+</div>
 
-For rapid testing, use the cookbook script:
+For rapid testing, use the cookbook script directly:
 
 ```bash
 cd tutorials/cookbooks/grader_validation
@@ -135,8 +154,6 @@ python rewardbench2.py --data-path rewardbench2_test.parquet --model qwen3-32b
 
 
 ## Interpreting Results
-
-### Overall Accuracy
 
 The primary metric is overall accuracy across all subsets:
 
@@ -151,7 +168,7 @@ Correct: 785/1000
 - **60-70%** — Fair: May need refinement for production use
 - **< 60%** — Poor: Requires significant improvement
 
-### Per-Subset Breakdown
+Beyond overall accuracy, examine per-subset performance to identify specific strengths and weaknesses:
 
 ```
 Per-Subset Performance:
@@ -168,9 +185,7 @@ This breakdown reveals strengths in Safety (88.4%) and Factuality (82.3%), but l
 
 ## Error Analysis
 
-Systematic error analysis helps identify patterns and guide improvements.
-
-### Collecting Failed Cases
+Systematic error analysis helps identify patterns and guide improvements. Start by collecting failed cases and grouping them by subset:
 
 ```python
 # Group errors by subset
@@ -189,9 +204,7 @@ for sample, result in zip(validation_data, results):
         })
 ```
 
-### Analyzing Error Patterns
-
-**Review by subset:**
+Next, review errors by subset to identify patterns:
 
 ```python
 for subset, errors in errors_by_subset.items():
@@ -204,9 +217,7 @@ for subset, errors in errors_by_subset.items():
 
 **Common error types to look for:** Check if errors cluster on certain positions (position bias), compare lengths of predicted vs. correct responses (length bias), identify if errors concentrate in specific topics like advanced math (domain gaps), review grader reasoning for misunderstanding evaluation criteria (prompt issues), and detect if grader outputs aren't properly parsed (parsing failures).
 
-### Taking Action
-
-**Based on error patterns:**
+Based on these patterns, take targeted action:
 
 | Error Pattern | Root Cause | Solution |
 |---------------|------------|----------|
@@ -216,18 +227,7 @@ for subset, errors in errors_by_subset.items():
 | Inconsistent format | Parsing issues | Use structured output format |
 | Generic reasoning | Vague criteria | Provide explicit evaluation rubric |
 
-
-## Best Practices
-
-### Prompt Engineering
-
-**For Four-Way Comparison:** Add explicit anti-bias instructions ("Ignore response length and position. Focus solely on quality."), emphasize evaluation criteria (helpfulness, accuracy, clarity, completeness), use structured output format (`[[A]]`, `[[B]]`, `[[C]]`, or `[[D]]`), and include few-shot examples if consistency is low.
-
-**For Ties Rating:** Provide a calibrated scale (1-3: Poor, 4-5: Below avg, 6-7: Good, 8-9: Excellent, 10: Outstanding), request reasoning before rating ("Explain your evaluation, then rate 1-10"), and ensure numeric rating appears on the last line for reliable parsing.
-
-### Bias Detection & Mitigation
-
-**Check Position Bias:**
+To detect biases systematically, analyze prediction distributions to check for position bias:
 
 ```python
 # Analyze prediction distribution
@@ -241,17 +241,19 @@ for pos, count in position_counts.items():
     print(f"{pos}: {count/len(results):.1%}")
 ```
 
-If biased (e.g., A: 40%, D: 15%), add anti-bias instructions or use structured output.
+If biased (e.g., A: 40%, D: 15%), add anti-bias instructions or use structured output. Check length bias by comparing average lengths of predicted vs. correct responses—if grader consistently prefers longer/shorter responses, adjust your prompt.
 
-**Check Length Bias:**
-Compare average lengths of predicted vs. correct responses. If grader consistently prefers longer/shorter, adjust prompt.
+Improve grader performance through effective prompt engineering. **For Four-Way Comparison:** Add explicit anti-bias instructions ("Ignore response length and position. Focus solely on quality."), emphasize evaluation criteria (helpfulness, accuracy, clarity, completeness), use structured output format (`[[A]]`, `[[B]]`, `[[C]]`, or `[[D]]`), and include few-shot examples if consistency is low. **For Ties Rating:** Provide a calibrated scale (1-3: Poor, 4-5: Below avg, 6-7: Good, 8-9: Excellent, 10: Outstanding), request reasoning before rating ("Explain your evaluation, then rate 1-10"), and ensure numeric rating appears on the last line for reliable parsing.
 
-### Advanced Techniques
-
-Add domain-specific samples with identical format to create custom subsets. Run multiple graders on the same dataset to compare performance or build ensembles. Use iterative refinement by reviewing errors, updating prompts, and re-validating until you reach target accuracy. Split data into folds for cross-validation to test robustness across different samples.
+For advanced optimization, consider these techniques: Add domain-specific samples with identical format to create custom subsets. Run multiple graders on the same dataset to compare performance or build ensembles. Use iterative refinement by reviewing errors, updating prompts, and re-validating until you reach target accuracy. Split data into folds for cross-validation to test robustness across different samples.
 
 
 ## Next Steps
 
 Learn validation concepts in [Validation Overview](overview.md), refine your implementation with [Create Custom Graders](../building_graders/create_custom_graders.md), or train models on RewardBench2 data with [Train Reward Models](../building_graders/training/overview.md). For production deployment, see [Running Graders](../running_graders/run_tasks.md) and [Monitor Performance](../running_graders/grader_analysis.md).
+
+
+## References
+
+[1] Malik, S., Pyatkin, V., Land, S., Morrison, J., Smith, N. A., Hajishirzi, H., & Lambert, N. (2025). RewardBench 2: Advancing Reward Model Evaluation. *arXiv preprint arXiv:2506.01937*. [https://arxiv.org/abs/2506.01937](https://arxiv.org/abs/2506.01937)
 
