@@ -32,7 +32,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from open_judge.graders.agent.deep_research.financial_trajectory_faithfulness import (
+from tutorials.deep_research.graders.financial_trajectory_faithfulness import (
     FinancialTrajectoryFaithfulGrader,
 )
 from open_judge.graders.schema import GraderError
@@ -103,7 +103,7 @@ class TestFinancialTrajectoryFaithfulGraderUnit:
 
         # Simulate what the callback returns
         mock_callback_response = AsyncMock()
-        mock_callback_response.metadata = tuples_data
+        mock_callback_response.parsed = tuples_data  # Set parsed as dict, not AsyncMock
         callback_result = grader.callback(mock_callback_response)
 
         # Now setup the actual mock response with the callback result
@@ -185,7 +185,7 @@ class TestFinancialTrajectoryFaithfulGraderUnit:
 
         # Simulate what the callback returns
         mock_callback_response = AsyncMock()
-        mock_callback_response.metadata = tuples_data
+        mock_callback_response.parsed = tuples_data  # Set parsed as dict, not AsyncMock
         callback_result = grader.callback(mock_callback_response)
 
         # Now setup the actual mock response with the callback result
@@ -302,7 +302,7 @@ class TestFinancialTrajectoryFaithfulGraderUnit:
 
         # Simulate what the callback returns
         mock_callback_response = AsyncMock()
-        mock_callback_response.metadata = tuples_data
+        mock_callback_response.parsed = tuples_data  # Set parsed as dict, not AsyncMock
         callback_result = grader.callback(mock_callback_response)
 
         # Now setup the actual mock response with the callback result
@@ -547,7 +547,7 @@ class TestFinancialTrajectoryFaithfulGraderUnit:
 
         # Simulate what the callback returns
         mock_callback_response = AsyncMock()
-        mock_callback_response.metadata = tuples_data
+        mock_callback_response.parsed = tuples_data  # Set parsed as dict, not AsyncMock
         callback_result = grader.callback(mock_callback_response)
 
         # Now setup the actual mock response with the callback result

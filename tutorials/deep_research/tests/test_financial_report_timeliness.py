@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from open_judge.graders.agent.deep_research.financial_report_timeliness import (
+from tutorials.deep_research.graders.financial_report_timeliness import (
     FinancialReportTimelinessGrader,
 )
 from open_judge.graders.schema import GraderError, GraderScore
