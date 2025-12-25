@@ -369,3 +369,117 @@ class GradingRunner(BaseRunner):
                         {grader_name: grader_results[grader_name][i] for grader_name in self.grader_configs.keys()},
                     )
         return grader_results
+
+    async def arun_multiple_datasets(
+        self,
+        datasets: List[List[dict]],
+        *args: Any,
+        **kwargs: Any,
+    ) -> List[RunnerResult]:
+        """Run evaluators on multiple datasets concurrently.
+
+        All datasets share the same concurrency pool (max_concurrency) through
+        the singleton ConcurrencyManager. Each dataset is processed by calling
+        arun(), and results are returned as a list in the same order as the input datasets.
+
+        Args:
+            datasets: List of datasets, where each dataset is a list of data samples.
+                Each sample is a dictionary containing the fields needed by the graders.
+                For example:
+                [
+                    [{"query": "Q1", "answer": "A1"}, {"query": "Q2", "answer": "A2"}],
+                    [{"query": "Q3", "answer": "A3"}]
+                ]
+            *args: Additional positional arguments passed to arun.
+            **kwargs: Additional keyword arguments passed to arun.
+
+        Returns:
+            List[RunnerResult]: A list of RunnerResults, one for each dataset in the same order
+            as the input datasets. Each RunnerResult is a dictionary mapping grader names to
+            their results for all samples in that dataset.
+
+            The structure is:
+            [
+                {  # Results for dataset 0
+                    "grader1_name": [result1, result2, ...],
+                    "grader2_name": [result1, result2, ...]
+                },
+                {  # Results for dataset 1
+                    "grader1_name": [result1, result2, ...],
+                    "grader2_name": [result1, result2, ...]
+                },
+                ...
+            ]
+
+        Example:
+            >>> # Define graders
+            >>> accuracy_grader = AccuracyGrader()
+            >>> relevance_grader = RelevanceGrader()
+            >>>
+            >>> # Create grader configs
+            >>> grader_configs = {
+            ...     "accuracy": GraderConfig(grader=accuracy_grader),
+            ...     "relevance": GraderConfig(grader=relevance_grader)
+            ... }
+            >>>
+            >>> # Create runner
+            >>> runner = GradingRunner(grader_configs, max_concurrency=10)
+            >>>
+            >>> # Multiple datasets to evaluate
+            >>> datasets = [
+            ...     [  # dataset 0: training set
+            ...         {"query": "What is the capital of France?", "answer": "Paris"},
+            ...         {"query": "What is 2+2?", "answer": "4"}
+            ...     ],
+            ...     [  # dataset 1: test set
+            ...         {"query": "What is the capital of Spain?", "answer": "Madrid"}
+            ...     ]
+            ... ]
+            >>>
+            >>> # Run batch evaluation
+            >>> results = await runner.arun_multiple_datasets(datasets)
+            >>>
+            >>> # Access results by index
+            >>> train_results = results[0]
+            >>> test_results = results[1]
+            >>>
+            >>> # Process results
+            >>> for i, dataset_results in enumerate(results):
+            ...     print(f"Results for dataset {i}:")
+            ...     for grader_name, grader_results in dataset_results.items():
+            ...         print(f"  {grader_name}:")
+            ...         for j, result in enumerate(grader_results):
+            ...             if hasattr(result, 'score'):
+            ...                 print(f"    Sample {j}: {result.score}")
+
+        Note:
+            - All datasets share the same ConcurrencyManager singleton, ensuring that
+              the total concurrent operations across all datasets respect max_concurrency.
+            - Progress bar shows dataset-level progress (e.g., "3/5 datasets completed").
+            - Each dataset maintains the order of samples and graders as specified.
+            - When batch processing, individual arun() progress bars are disabled to avoid
+              display conflicts with the batch-level progress bar.
+        """
+        # Temporarily disable show_progress for individual arun calls to avoid progress bar conflicts
+        original_show_progress = self.show_progress
+        self.show_progress = False
+
+        try:
+            # Create tasks for each dataset
+            tasks = [self.arun(dataset, *args, **kwargs) for dataset in datasets]
+
+            # Execute all dataset tasks concurrently with progress bar
+            if original_show_progress:
+                all_results = await tqdm_asyncio.gather(
+                    *tasks,
+                    desc="Grading Datasets",
+                    total=len(tasks),
+                )
+            else:
+                all_results = await asyncio.gather(*tasks)
+
+            # Return results as a list
+            return list(all_results)
+        finally:
+            # Restore original show_progress setting
+            self.show_progress = original_show_progress

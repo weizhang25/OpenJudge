@@ -4,9 +4,10 @@ dynamic = ["version"]
 description = "OpenJudge: A Next-Generation Evaluation System for AI Model Assessment"
 readme = "README.md"
 authors = [
-  { name = "Haoran Chen", email = "chenhaoran.chr@alibaba-inc.com" },
+  { name = "Haoran Chen", email = "congling.chr@alibaba-inc.com" },
   { name = "Yuhao Cui", email = "cyh262498@alibaba-inc.com" },
   { name = "Jiaji Deng", email = "dengjiaji.djj@alibaba-inc.com" },
+  { name = "Yiwen Ding", email = "dingyiwen.dyw@antgroup.com" },
   { name = "Qingxu Fu", email = "fuqingxu.fqx@alibaba-inc.com" },
   { name = "Yuan Gao", email = "yunze.gy@alibaba-inc.com" },
   { name = "Sen Huang", email = "huangsen.huang@alibaba-inc.com" },
