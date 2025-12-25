@@ -37,13 +37,14 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 
-from open_judge.models.openai_chat_model import OpenAIChatModel
-from open_judge.runner.grading_runner import GradingRunner
 from tutorials.cookbooks.grader_validation.rewardbench2 import (
     RewardBench2Analyzer,
     RewardBench2Grader,
     load_rewardbench2_data,
 )
+
+from open_judge.models.openai_chat_model import OpenAIChatModel
+from open_judge.runner.grading_runner import GradingRunner
 
 
 async def run_rewardbench2_test(

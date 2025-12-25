@@ -43,11 +43,11 @@ data = [
 # Configure graders with mappers to connect your data fields
 grader_configs = {
     "helpfulness": {
-        "grader": HelpfulnessGrader(model=OpenAIChatModel("gpt-4")),
+        "grader": HelpfulnessGrader(model=OpenAIChatModel("qwen3-32b")),
         "mapper": {"question": "query", "answer": "response"}
     },
     "relevance": {
-        "grader": RelevanceGrader(model=OpenAIChatModel("gpt-4")),
+        "grader": RelevanceGrader(model=OpenAIChatModel("qwen3-32b")),
         "mapper": {"q": "query", "a": "response", "ref": "reference_answer"}
     }
 }

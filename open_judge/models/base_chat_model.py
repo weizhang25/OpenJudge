@@ -31,7 +31,7 @@ class BaseChatModel(ABC):
         ...         pass
         >>> model = MyChatModel(model="qwen3-max", stream=False)
         >>> print(model.model)
-        gpt-3.5-turbo
+        qwen3-32b
     """
 
     model: str
@@ -52,9 +52,9 @@ class BaseChatModel(ABC):
             stream: Whether the model output is streaming or not.
 
         Example:
-            >>> model = BaseChatModel(model="qwen3-max", stream=True)
+            >>> model = BaseChatModel(model="qwen3-32b", stream=True)
             >>> print(model.model)
-            gpt-3.5-turbo
+            qwen3-32b
             >>> print(model.stream)
             True
         """

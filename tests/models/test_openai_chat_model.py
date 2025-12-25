@@ -32,7 +32,7 @@ class TestOpenAIChatModel:
         """Set up test fixtures before each test method."""
         with patch("open_judge.models.openai_chat_model.AsyncOpenAI"):
             self.model = OpenAIChatModel(
-                model="gpt-3.5-turbo",
+                model="qwen3-32b",
                 api_key="test-key",
                 base_url="https://api.openai.com/v1",
             )
@@ -41,19 +41,19 @@ class TestOpenAIChatModel:
         """Test initialization of OpenAIChatModel."""
         with patch("open_judge.models.openai_chat_model.AsyncOpenAI"):
             # Test basic initialization
-            model = OpenAIChatModel(model="gpt-3.5-turbo")
-            assert model.model == "gpt-3.5-turbo"
+            model = OpenAIChatModel(model="qwen3-32b")
+            assert model.model == "qwen3-32b"
             assert not model.stream
 
             # Test initialization with custom parameters
             model = OpenAIChatModel(
-                model="gpt-4",
+                model="qwen3-32b",
                 api_key="test-key",
                 base_url="https://custom-api.com/v1",
                 stream=True,
                 temperature=0.7,
             )
-            assert model.model == "gpt-4"
+            assert model.model == "qwen3-32b"
             assert model.stream
             assert model.kwargs["temperature"] == 0.7
 
@@ -88,7 +88,7 @@ class TestOpenAIChatModel:
                 ),
             ],
             created=1234567890,
-            model="gpt-3.5-turbo",
+            model="qwen3-32b",
             object="chat.completion",
         )
 
@@ -101,7 +101,7 @@ class TestOpenAIChatModel:
         ) as mock_openai_constructor:
             mock_openai_constructor.return_value = mock_instance
             model = OpenAIChatModel(
-                model="gpt-3.5-turbo",
+                model="qwen3-32b",
                 api_key="test-key",
                 base_url="https://api.openai.com/v1",
             )
@@ -121,7 +121,7 @@ class TestOpenAIChatModel:
             # Verify the API was called correctly
             mock_instance.chat.completions.create.assert_called_once()
             call_kwargs = mock_instance.chat.completions.create.call_args[1]
-            assert call_kwargs["model"] == "gpt-3.5-turbo"
+            assert call_kwargs["model"] == "qwen3-32b"
             assert len(call_kwargs["messages"]) == 2
 
     @patch("open_judge.models.openai_chat_model.AsyncOpenAI")
@@ -200,7 +200,7 @@ class TestOpenAIChatModel:
                 ),
             ],
             created=1234567890,
-            model="gpt-3.5-turbo",
+            model="qwen3-32b",
             object="chat.completion",
         )
 
@@ -213,7 +213,7 @@ class TestOpenAIChatModel:
         ) as mock_openai_constructor:
             mock_openai_constructor.return_value = mock_instance
             model = OpenAIChatModel(
-                model="gpt-3.5-turbo",
+                model="qwen3-32b",
                 api_key="test-key",
                 base_url="https://api.openai.com/v1",
             )
@@ -255,7 +255,7 @@ class TestOpenAIChatModel:
                 ),
             ],
             created=1234567890,
-            model="gpt-3.5-turbo",
+            model="qwen3-32b",
             object="chat.completion",
         )
 
@@ -268,7 +268,7 @@ class TestOpenAIChatModel:
         ) as mock_openai_constructor:
             mock_openai_constructor.return_value = mock_instance
             model = OpenAIChatModel(
-                model="gpt-3.5-turbo",
+                model="qwen3-32b",
                 api_key="test-key",
                 base_url="https://api.openai.com/v1",
             )

@@ -24,7 +24,7 @@ Conversely, the **Listwise** approach is inherently comparative. It works by dir
 ### Implementation Methods
 **Code-Based** graders rely on predefined, programmed logic and are most effective for objective assessments. They excel when evaluating quantifiable metrics like response length or keyword presence, where the criteria are clear and unambiguous. Their deterministic nature makes them highly reproducible and cost-effective, especially for high-volume evaluations.
 
-**LLM-Based** graders leverage the language understanding capabilities of large models (such as GPT-4 or Qwen) to make nuanced judgments. They are ideal for subjective assessments that require an understanding of context and meaning, such as judging helpfulness, coherence, or overall quality. These graders are also the preferred choice when you need rich, detailed feedback and explanations for their scores.
+**LLM-Based** graders leverage the language understanding capabilities of large models (such GPT-4 or Qwen) to make nuanced judgments. They are ideal for subjective assessments that require an understanding of context and meaning, such as judging helpfulness, coherence, or overall quality. These graders are also the preferred choice when you need rich, detailed feedback and explanations for their scores.
 
 ### Decision Guide
 | Scenario | Approach | Method | Why |
@@ -95,7 +95,7 @@ from open_judge.models.openai_chat_model import OpenAIChatModel
 
 # Define your model
 model = OpenAIChatModel(
-    model="gpt-4",
+    model="qwen3-32b",
     api_key="your-api-key"
 )
 

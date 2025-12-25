@@ -292,7 +292,7 @@ class TrajectoryComprehensiveGrader(LLMGrader):
 
     Example:
         >>> from open_judge.models.openai_chat_model import OpenAIChatModel
-        >>> api = OpenAIChatModel(api_key="...", model="gpt-4o")
+        >>> api = OpenAIChatModel(api_key="...", model="qwen3-32b")
         >>> grader = TrajectoryComprehensiveGrader(model=api, resolution_threshold=0.75)
         >>> result = await grader.aevaluate(
         ...     messages=[
@@ -414,7 +414,7 @@ class TrajectoryComprehensiveGrader(LLMGrader):
 
         Example:
             >>> from open_judge.models.openai_chat_model import OpenAIChatModel
-            >>> model = OpenAIChatModel(api_key="...", model="gpt-4o")
+            >>> model = OpenAIChatModel(api_key="...", model="qwen3-32b")
             >>> grader = TrajectoryComprehensiveGrader(model=model, resolution_threshold=0.75)
         """
         super().__init__(

@@ -29,9 +29,6 @@ from .tool.tool_call_sequence_match import ToolCallSequenceMatchGrader
 from .tool.tool_call_success import ToolCallSuccessGrader
 from .tool.tool_parameter_check import ToolParameterCheckGrader
 from .tool.tool_selection import ToolSelectionGrader
-from .trajectory.rubrics_based_trajectory_performance import (
-    RubricsBasedTrajectoryPerformance,
-)
 
 # Trajectory graders
 from .trajectory.trajectory_comprehensive import TrajectoryComprehensiveGrader

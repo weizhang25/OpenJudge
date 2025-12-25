@@ -227,7 +227,7 @@ class RelevanceGrader(LLMGrader):
         >>> from open_judge.graders.common.relevance import RelevanceGrader
         >>>
         >>> # Initialize grader
-        >>> model = OpenAIChatModel(api_key="sk-...", model="gpt-4")
+        >>> model = OpenAIChatModel(api_key="sk-...", model="qwen3-32b")
         >>> grader = RelevanceGrader(model=model)
         >>>
         >>> # Relevant response

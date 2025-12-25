@@ -64,7 +64,7 @@ contains_grader = FunctionGrader(contains_reference)
 
 ```
 # An LLM grader that evaluates helpfulness of responses
-helpfulness_grader = HelpfulnessGrader(model=OpenAIChatModel("gpt-4"))
+helpfulness_grader = HelpfulnessGrader(model=OpenAIChatModel("qwen3-32b"))
 ```
 
 ### Evaluation Modes
@@ -149,11 +149,11 @@ data = [
 # Configure graders with mappers to connect your data fields
 graders = {
     "helpfulness": {
-        "grader": HelpfulnessGrader(model=OpenAIChatModel("gpt-4")),
+        "grader": HelpfulnessGrader(model=OpenAIChatModel("qwen3-32b")),
         "mapper": {"question": "query", "answer": "response"}
     },
     "relevance": {
-        "grader": RelevanceGrader(model=OpenAIChatModel("gpt-4")),
+        "grader": RelevanceGrader(model=OpenAIChatModel("qwen3-32b")),
         "mapper": {"q": "query", "a": "response", "ref": "reference_answer"}
     }
 }

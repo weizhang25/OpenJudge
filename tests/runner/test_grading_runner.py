@@ -9,7 +9,6 @@ import copy
 from unittest.mock import AsyncMock
 
 import pytest
-from jsonschema import validate
 
 from open_judge.graders.base_grader import BaseGrader
 from open_judge.graders.schema import GraderError, GraderScore

@@ -46,6 +46,7 @@ repos:
                 ^docs
                 | ^tests/
                 | ^cookbook/
+                | ^cookbooks/
                 | ^tutorials/
                 | pb2\.py$
                 | grpc\.py$
