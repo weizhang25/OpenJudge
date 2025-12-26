@@ -202,7 +202,7 @@ If you are currently using v0.1.x, choose one of the following paths:
 pip install rm-gallery
 ```
 
-We preserved the source code of **v0.1.7 (the latest v0.1.x release)** in the [`v0.1.7` branch](https://github.com/modelscope/OpenJudge/tree/v0.1.7).
+We preserved the source code of **v0.1.7 (the latest v0.1.x release)** in the [`v0.1.7-legacy` branch](https://github.com/modelscope/OpenJudge/tree/v0.1.7-legacy).
 
 - **Migrate to v0.2.0 (recommended)**: follow the **[Installation](#-installation)** section above, then walk through **[Quickstart](#-quickstart)** (or the full [Quickstart Guide](./docs/get_started/quickstart.md)) to update your imports / usage.
 

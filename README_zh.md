@@ -200,7 +200,7 @@ if __name__ == "__main__":
 pip install rm-gallery
 ```
 
-我们在 [`v0.1.7` 分支](https://github.com/modelscope/OpenJudge/tree/v0.1.7) 中保留了 **v0.1.7（最新的 v0.1.x 版本）** 的源代码。
+我们在 [`v0.1.7-legacy` 分支](https://github.com/modelscope/OpenJudge/tree/v0.1.7-legacy) 中保留了 **v0.1.7（最新的 v0.1.x 版本）** 的源代码。
 
 - **迁移到 v0.2.0（推荐）**：按照上方的 **[安装](#-安装)** 章节操作，然后浏览 **[快速开始](#-快速开始)**（或完整的 [快速开始指南](./docs/get_started/quickstart.md)）来更新您的导入/用法。
 
