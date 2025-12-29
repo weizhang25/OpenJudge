@@ -414,11 +414,11 @@ class TestHallucinationGraderAdversarial:
         pairwise_accuracy = correct_predictions / total_predictions if total_predictions > 0 else 0.0
 
         # Print accuracy for reporting
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(
             f"HallucinationGrader Pairwise Accuracy: {pairwise_accuracy:.4f} ({correct_predictions}/{total_predictions})"
         )
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
         # Assert that false positive and false negative rates meet expected thresholds
         # Note: We log the rates but don't fail the test if they exceed thresholds

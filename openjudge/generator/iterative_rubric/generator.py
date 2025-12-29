@@ -444,7 +444,8 @@ class IterativeRubricsGenerator(LLMGraderGenerator):
                 current_index = end_idx
 
                 logger.info(
-                    f"Iteration {iteration}: Processing batch {start_idx}-{end_idx-1} " f"({len(batch_data)} samples)",
+                    f"Iteration {iteration}: Processing batch {start_idx}-{end_idx - 1} "
+                    f"({len(batch_data)} samples)",
                 )
 
                 # Generate rubrics for batch concurrently
@@ -559,7 +560,7 @@ class IterativeRubricsGenerator(LLMGraderGenerator):
         if not self.config.enable_categorization:
             logger.info(f"Categorization disabled: keeping all {len(query_rubrics)} rubrics")
             formatted_rubrics = "\n\n".join(
-                [f"{i+1}. {rubric}" for i, rubric in enumerate(query_rubrics)],
+                [f"{i + 1}. {rubric}" for i, rubric in enumerate(query_rubrics)],
             )
             return formatted_rubrics
 
@@ -583,7 +584,7 @@ class IterativeRubricsGenerator(LLMGraderGenerator):
                 logger.error("Rubric categorization failed, falling back to numbered list format")
                 # Fallback: return original rubrics as formatted string
                 return "\n\n".join(
-                    [f"{i+1}. {rubric}" for i, rubric in enumerate(query_rubrics)],
+                    [f"{i + 1}. {rubric}" for i, rubric in enumerate(query_rubrics)],
                 )
 
             logger.info(
@@ -592,7 +593,7 @@ class IterativeRubricsGenerator(LLMGraderGenerator):
 
             # Format categorized rubrics into a single string
             formatted_rubrics = "\n\n".join(
-                [f"Rubric {i+1}:\n{rubric}" for i, rubric in enumerate(categorized_rubrics)],
+                [f"Rubric {i + 1}:\n{rubric}" for i, rubric in enumerate(categorized_rubrics)],
             )
 
             return formatted_rubrics
@@ -600,5 +601,5 @@ class IterativeRubricsGenerator(LLMGraderGenerator):
         except Exception as e:
             logger.error(f"Categorization error: {e}, falling back to numbered list format")
             return "\n\n".join(
-                [f"{i+1}. {rubric}" for i, rubric in enumerate(query_rubrics)],
+                [f"{i + 1}. {rubric}" for i, rubric in enumerate(query_rubrics)],
             )

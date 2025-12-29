@@ -135,7 +135,7 @@ async def run_rewardbench2_test(
 
         metadata = analysis_result.metadata
         logger.info("\nOverall Performance:")
-        logger.info(f"  Accuracy: {metadata.get('accuracy', 0):.4f} ({metadata.get('accuracy', 0)*100:.2f}%)")
+        logger.info(f"  Accuracy: {metadata.get('accuracy', 0):.4f} ({metadata.get('accuracy', 0) * 100:.2f}%)")
         logger.info(f"  Correct: {metadata.get('correct_count', 0)}/{metadata.get('valid_samples', 0)}")
         logger.info(f"  Total samples: {metadata.get('total_samples', 0)}")
 
@@ -147,7 +147,7 @@ async def run_rewardbench2_test(
                 correct = metrics.get("correct_count", 0)
                 total = metrics.get("total_samples", 0)
                 logger.info(
-                    f"  {subset:15s}: {accuracy:.4f} ({accuracy*100:5.2f}%) - " f"{correct:2d}/{total:2d} correct",
+                    f"  {subset:15s}: {accuracy:.4f} ({accuracy * 100:5.2f}%) - " f"{correct:2d}/{total:2d} correct",
                 )
 
         logger.info("\n" + "=" * 80)

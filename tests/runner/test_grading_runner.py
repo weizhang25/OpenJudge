@@ -207,12 +207,9 @@ class TestGradingRunner:
         assert "accuracy_grader" in results
         assert "relevance_grader" in results
 
-        # Find the aggregator results - they are stored with the aggregator object as key
-        aggregator_results = None
-        for key in results:
-            if hasattr(key, "__call__"):  # It's the aggregator object
-                aggregator_results = results[key]
-                break
+        # Find the aggregator results - they are stored with the aggregator name as key
+        assert "weighted_sum" in results
+        aggregator_results = results["weighted_sum"]
 
         assert aggregator_results is not None
         assert len(aggregator_results) == 1
@@ -479,12 +476,9 @@ class TestGradingRunner:
 
         # Verify aggregator results exist in both datasets
         for dataset_results in results:
-            # Find aggregator results
-            aggregator_results = None
-            for key in dataset_results:
-                if hasattr(key, "__call__"):  # It's the aggregator object
-                    aggregator_results = dataset_results[key]
-                    break
+            # Find aggregator results - they are stored with the aggregator name as key
+            assert "weighted_sum" in dataset_results
+            aggregator_results = dataset_results["weighted_sum"]
 
             assert aggregator_results is not None
 

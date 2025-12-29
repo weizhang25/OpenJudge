@@ -263,7 +263,7 @@ async def test_iterative_grader_listwise() -> None:
     # Evaluate test sample
     test_query = LISTWISE_TEST_SAMPLE[0]["query"]
     test_responses = LISTWISE_TEST_SAMPLE[0]["responses"]
-    responses = "\n\n".join([f"Response {i+1}:\n{ans}" for i, ans in enumerate(test_responses)])
+    responses = "\n\n".join([f"Response {i + 1}:\n{ans}" for i, ans in enumerate(test_responses)])
 
     result = await grader.aevaluate(query=test_query, responses=responses)
 

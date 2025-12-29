@@ -248,7 +248,7 @@ class LLMRubricCategorizer:
         try:
             # Format rubrics text
             rubrics_text = "\n".join(
-                [f"{i+1}. {rubric}" for i, rubric in enumerate(rubrics)],
+                [f"{i + 1}. {rubric}" for i, rubric in enumerate(rubrics)],
             )
 
             # Call LLM using Chat with structured output

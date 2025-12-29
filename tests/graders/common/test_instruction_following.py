@@ -386,11 +386,11 @@ class TestInstructionFollowingGraderAdversarial:
         pairwise_accuracy = correct_predictions / total_predictions if total_predictions > 0 else 0.0
 
         # Print accuracy for reporting
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(
             f"InstructionFollowingGrader Pairwise Accuracy: {pairwise_accuracy:.4f} ({correct_predictions}/{total_predictions})"
         )
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
         # Assert that analyzers executed successfully
         # Note: Instruction following evaluation can be challenging with current data

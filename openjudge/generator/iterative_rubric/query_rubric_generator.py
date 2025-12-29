@@ -937,7 +937,7 @@ class QuerySpecificRubricGenerator:
 
         # Format responses for evaluation
         responses_text = "\n\n".join(
-            [f"Response {i+1}:\n{resp}" for i, resp in enumerate(responses)],
+            [f"Response {i + 1}:\n{resp}" for i, resp in enumerate(responses)],
         )
 
         try:
@@ -1112,7 +1112,7 @@ class QuerySpecificRubricGenerator:
             ranks = data.get("label_rank", [])
 
             for i, response in enumerate(responses):
-                lines.append(f"Response {i+1}:")
+                lines.append(f"Response {i + 1}:")
                 lines.append(f"{response}")
 
                 if i < len(ranks):
@@ -1128,5 +1128,5 @@ class QuerySpecificRubricGenerator:
     def _format_rubrics_text(self, rubrics: List[str]) -> str:
         """Format rubrics list into numbered text"""
         return "\n".join(
-            [f"{i+1}. {rubric}" for i, rubric in enumerate(rubrics)],
+            [f"{i + 1}. {rubric}" for i, rubric in enumerate(rubrics)],
         )
