@@ -15,7 +15,7 @@ While Langfuse provides built-in evaluation features, external evaluation pipeli
 
 ### Integration Architecture
 
-\`\`\`
+```
 ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
 │    Langfuse     │      │    OpenJudge    │      │    Langfuse     │
 │    (Traces)     │─────▶│  (Evaluation)   │─────▶│    (Scores)     │
@@ -23,7 +23,7 @@ While Langfuse provides built-in evaluation features, external evaluation pipeli
         │                        │                        ▲
         │   api.trace.list()     │   graders.aevaluate()  │   create_score()
         └────────────────────────┴────────────────────────┘
-\`\`\`
+```
 
 The entire workflow consists of three steps:
 
@@ -35,13 +35,13 @@ The entire workflow consists of three steps:
 
 ### Install Dependencies
 
-\`\`\`bash
+```bash
 pip install py-openjudge langfuse
-\`\`\`
+```
 
 ### Configure Environment Variables
 
-\`\`\`bash
+```bash
 # Langfuse authentication
 export LANGFUSE_PUBLIC_KEY="pk-lf-your-public-key"
 export LANGFUSE_SECRET_KEY="sk-lf-your-secret-key"
@@ -50,11 +50,11 @@ export LANGFUSE_HOST="https://cloud.langfuse.com"  # Or your self-hosted URL
 # OpenAI API configuration (required for LLM-based graders)
 export OPENAI_API_KEY="sk-your-api-key"
 export OPENAI_BASE_URL="https://api.openai.com/v1"  # Optional, defaults to OpenAI
-\`\`\`
+```
 
 ### Initialize Clients
 
-\`\`\`python
+```python
 import os
 from langfuse import Langfuse
 
@@ -67,13 +67,13 @@ langfuse = Langfuse(
 
 # Verify connection
 assert langfuse.auth_check(), "Langfuse authentication failed"
-\`\`\`
+```
 
 ## Step 1: Create Test Traces (Optional)
 
 If you already have traces in Langfuse, you can skip this step. The following code creates synthetic traces for testing:
 
-\`\`\`python
+```python
 from langfuse import Langfuse, observe
 
 # Initialize Langfuse client
@@ -103,13 +103,13 @@ for question in test_questions:
 
 # Ensure all traces are sent
 langfuse.flush()
-\`\`\`
+```
 
 ## Step 2: Fetch Traces from Langfuse
 
 ### Basic Fetch
 
-\`\`\`python
+```python
 def fetch_traces_for_evaluation(
     limit: int = 100,
     tags: list[str] | None = None,
@@ -148,13 +148,13 @@ def fetch_traces_for_evaluation(
             result.append(trace_dict)
     
     return result
-\`\`\`
+```
 
 ### Advanced Filtering: Fetch by Time Range
 
 In production, you often want to filter traces by time range:
 
-\`\`\`python
+```python
 from datetime import datetime, timedelta
 
 def fetch_recent_traces(
@@ -192,7 +192,7 @@ def fetch_recent_traces(
             })
     
     return result
-\`\`\`
+```
 
 ## Step 3: Evaluate Traces with OpenJudge
 
@@ -202,14 +202,14 @@ Select the appropriate OpenJudge grader based on your evaluation needs:
 
 | Evaluation Scenario | Recommended Grader | Type | Description |
 |---------------------|-------------------|------|-------------|
-| Response relevance | \`RelevanceGrader\` | LLM-Based | Evaluates response-query relevance (1-5) |
-| Content safety | \`HarmfulnessGrader\` | LLM-Based | Detects harmful content (1-5) |
-| Hallucination detection | \`HallucinationGrader\` | LLM-Based | Identifies fabricated information (1-5) |
-| Instruction following | \`InstructionFollowingGrader\` | LLM-Based | Checks instruction compliance (1-5) |
-| Answer correctness | \`CorrectnessGrader\` | LLM-Based | Compares with reference answer (1-5) |
-| Text similarity | \`SimilarityGrader\` | Code-Based | Computes text similarity (0-1) |
-| JSON validation | \`JsonValidatorGrader\` | Code-Based | Validates JSON syntax (0/1) |
-| Agent tool calls | \`ToolCallAccuracyGrader\` | LLM-Based | Evaluates tool call quality (1-5) |
+| Response relevance | `RelevanceGrader` | LLM-Based | Evaluates response-query relevance (1-5) |
+| Content safety | `HarmfulnessGrader` | LLM-Based | Detects harmful content (1-5) |
+| Hallucination detection | `HallucinationGrader` | LLM-Based | Identifies fabricated information (1-5) |
+| Instruction following | `InstructionFollowingGrader` | LLM-Based | Checks instruction compliance (1-5) |
+| Answer correctness | `CorrectnessGrader` | LLM-Based | Compares with reference answer (1-5) |
+| Text similarity | `SimilarityGrader` | Code-Based | Computes text similarity (0-1) |
+| JSON validation | `JsonValidatorGrader` | Code-Based | Validates JSON syntax (0/1) |
+| Agent tool calls | `ToolCallAccuracyGrader` | LLM-Based | Evaluates tool call quality (1-5) |
 
 For the complete list of 50+ built-in graders, see [Built-in Graders Overview](../built_in_graders/overview.md).
 
@@ -217,7 +217,7 @@ For the complete list of 50+ built-in graders, see [Built-in Graders Overview](.
 
 The simplest approach is to evaluate traces one by one with a single grader:
 
-\`\`\`python
+```python
 import asyncio
 from openjudge.models import OpenAIChatModel
 from openjudge.graders.common.relevance import RelevanceGrader
@@ -262,13 +262,13 @@ async def evaluate_single_trace():
 
 # Run evaluation
 asyncio.run(evaluate_single_trace())
-\`\`\`
+```
 
 ### Option 2: Batch Evaluation with GradingRunner (Recommended)
 
-For large numbers of traces, use \`GradingRunner\` for efficient concurrent batch evaluation. This approach supports multiple graders, field mapping, and score aggregation.
+For large numbers of traces, use `GradingRunner` for efficient concurrent batch evaluation. This approach supports multiple graders, field mapping, and score aggregation.
 
-\`\`\`python
+```python
 import asyncio
 from openjudge.models import OpenAIChatModel
 from openjudge.graders.common.relevance import RelevanceGrader
@@ -385,13 +385,13 @@ def send_result_to_langfuse(trace_id: str, grader_name: str, result) -> None:
 
 # Run batch evaluation
 asyncio.run(batch_evaluate_traces())
-\`\`\`
+```
 
 After running the evaluation, you can view the scores in your Langfuse dashboard:
 
 ![Langfuse Score Results](../images/langfuse_score_result.png)
 
-The scores include individual grader results (e.g., \`relevance\`, \`harmfulness\`) and aggregated composite scores (e.g., \`overall_quality\`).
+The scores include individual grader results (e.g., `relevance`, `harmfulness`) and aggregated composite scores (e.g., `overall_quality`).
 
 ## Related Resources
 
@@ -399,3 +399,4 @@ The scores include individual grader results (e.g., \`relevance\`, \`harmfulness
 - [Create Custom Graders](../building_graders/create_custom_graders.md)
 - [Langfuse Tracing Documentation](https://langfuse.com/docs/tracing)
 - [Langfuse Scores API](https://langfuse.com/docs/scores)
+
