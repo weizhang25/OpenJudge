@@ -197,13 +197,12 @@ class ToolSelectionGrader(LLMGrader):
         template: Optional[PromptTemplate] = DEFAULT_TOOL_SELECTION_TEMPLATE,
         language: LanguageEnum = LanguageEnum.EN,
     ):
-        template_arg = template if template else DEFAULT_TOOL_SELECTION_TEMPLATE
         super().__init__(
             name="tool_selection",
             mode=GraderMode.POINTWISE,
             description="Evaluate tool selection ",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_TOOL_SELECTION_TEMPLATE,
             language=language,
         )
 

@@ -180,13 +180,12 @@ class ActionAlignmentGrader(LLMGrader):
                      Defaults to DEFAULT_ACTION_ALIGNMENT_TEMPLATE.
             language: The language for the evaluation prompt. Defaults to LanguageEnum.EN.
         """
-        template_arg = template if template else DEFAULT_ACTION_ALIGNMENT_TEMPLATE
         super().__init__(
             name="action_alignment",
             mode=GraderMode.POINTWISE,
             description="Evaluate action alignment with plan",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_ACTION_ALIGNMENT_TEMPLATE,
             language=language,
         )
 

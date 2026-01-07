@@ -174,13 +174,12 @@ class MemoryRetrievalEffectivenessGrader(LLMGrader):
         template: Optional[PromptTemplate] = DEFAULT_MEMORY_RETRIEVAL_EFFECTIVENESS_TEMPLATE,
         language: LanguageEnum = LanguageEnum.EN,
     ):
-        template_arg = template if template else DEFAULT_MEMORY_RETRIEVAL_EFFECTIVENESS_TEMPLATE
         super().__init__(
             name="memory_retrieval_effectiveness",
             mode=GraderMode.POINTWISE,
             description="Evaluate memory retrieval effectiveness",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_MEMORY_RETRIEVAL_EFFECTIVENESS_TEMPLATE,
             language=language,
         )
 

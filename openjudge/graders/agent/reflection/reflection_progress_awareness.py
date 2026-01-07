@@ -212,13 +212,12 @@ class ReflectionProgressAwarenessGrader(LLMGrader):
         template: Optional[PromptTemplate] = DEFAULT_REFLECTION_PROGRESS_AWARENESS_TEMPLATE,
         language: LanguageEnum = LanguageEnum.EN,
     ):
-        template_arg = template if template else DEFAULT_REFLECTION_PROGRESS_AWARENESS_TEMPLATE
         super().__init__(
             name="reflection_progress_awareness",
             mode=GraderMode.POINTWISE,
             description="Evaluate reflection progress awareness",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_REFLECTION_PROGRESS_AWARENESS_TEMPLATE,
             language=language,
         )
 

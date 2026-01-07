@@ -174,13 +174,12 @@ class PlanFeasibilityGrader(LLMGrader):
         template: Optional[PromptTemplate] = DEFAULT_PLAN_FEASIBILITY_TEMPLATE,
         language: LanguageEnum = LanguageEnum.EN,
     ):
-        template_arg = template if template else DEFAULT_PLAN_FEASIBILITY_TEMPLATE
         super().__init__(
             name="plan_feasibility",
             mode=GraderMode.POINTWISE,
             description="Evaluate plan feasibility",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_PLAN_FEASIBILITY_TEMPLATE,
             language=language,
         )
 

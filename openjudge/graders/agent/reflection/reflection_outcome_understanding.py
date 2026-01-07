@@ -295,13 +295,12 @@ class ReflectionOutcomeUnderstandingGrader(LLMGrader):
         template: Optional[PromptTemplate] = DEFAULT_REFLECTION_OUTCOME_UNDERSTANDING_TEMPLATE,
         language: LanguageEnum = LanguageEnum.EN,
     ):
-        template_arg = template if template else DEFAULT_REFLECTION_OUTCOME_UNDERSTANDING_TEMPLATE
         super().__init__(
             name="reflection_outcome_understanding",
             mode=GraderMode.POINTWISE,
             description="Evaluate reflection outcome understanding",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_REFLECTION_OUTCOME_UNDERSTANDING_TEMPLATE,
             language=language,
         )
 

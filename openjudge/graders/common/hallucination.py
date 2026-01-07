@@ -260,13 +260,12 @@ class HallucinationGrader(LLMGrader):
             template: PromptTemplate for evaluation prompts (default: DEFAULT_HALLUCINATION_TEMPLATE)
             language: Language for prompts (default: LanguageEnum.EN)
         """
-        template_arg = template if template else DEFAULT_HALLUCINATION_TEMPLATE
         super().__init__(
             name="hallucination",
             mode=GraderMode.POINTWISE,
             description="Evaluate whether response contains hallucinations",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_HALLUCINATION_TEMPLATE,
             language=language,
         )
         self.threshold = threshold

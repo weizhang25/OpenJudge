@@ -171,13 +171,12 @@ class ReflectionAccuracyGrader(LLMGrader):
         template: Optional[PromptTemplate] = DEFAULT_REFLECTION_ACCURACY_TEMPLATE,
         language: LanguageEnum = LanguageEnum.EN,
     ):
-        template_arg = template if template else DEFAULT_REFLECTION_ACCURACY_TEMPLATE
         super().__init__(
             name="reflection_accuracy",
             mode=GraderMode.POINTWISE,
             description="Evaluate reflection accuracy",
             model=model,
-            template=template_arg,
+            template=template or DEFAULT_REFLECTION_ACCURACY_TEMPLATE,
             language=language,
         )
 
