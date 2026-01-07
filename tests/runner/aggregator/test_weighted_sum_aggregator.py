@@ -35,8 +35,8 @@ class TestWeightedSumAggregator:
 
         assert isinstance(result, GraderError)
         assert result.name == "test_agg"
-        assert result.reason == "No results to aggregate"
-        assert result.error == "No results provided for aggregation"
+        assert result.reason == "No grader result to aggregate"
+        assert result.error == "No grader result provided for aggregation"
 
     def test_equal_weight_aggregation(self):
         """Test aggregation with equal weights (default behavior)"""
