@@ -1,0 +1,40 @@
+# Gitleaks configuration for OpenJudge
+# This file configures secret detection rules
+
+title = "OpenJudge Gitleaks Config"
+
+[extend]
+# Extend the default gitleaks config
+useDefault = true
+
+# Allowed patterns (false positives)
+[allowlist]
+description = "Allowlist for false positives"
+
+# Exclude test files that may contain dummy secrets
+paths = [
+    '''site/.*''',
+    '''docs/.*\.html''',
+]
+
+# Exclude common false positive patterns
+regexes = [
+    # Example API key placeholders
+    '''sk-[A-Za-z0-9]{3}\.{3}[A-Za-z0-9]{3}''',
+    # Placeholder patterns
+    '''your[-_]?api[-_]?key''',
+    '''<YOUR[-_]?API[-_]?KEY>''',
+    '''REPLACE[-_]?WITH[-_]?YOUR[-_]?KEY''',
+    # Example/dummy patterns
+    '''example[-_]?key''',
+    '''dummy[-_]?key''',
+    '''test[-_]?key''',
+    '''fake[-_]?key''',
+]
+
+# Custom rule for Dashscope (Qwen) API keys (not in default gitleaks config)
+[[rules]]
+id = "dashscope-api-key"
+description = "Dashscope (Qwen) API Key"
+regex = '''(?i)(?:dashscope|qwen)[-_]?(?:api)?[-_]?key\s*[=:]\s*['"]?([a-zA-Z0-9-_]{20,})['"]?'''
+keywords = ["dashscope", "qwen"]
