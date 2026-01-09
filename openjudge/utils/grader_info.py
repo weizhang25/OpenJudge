@@ -3,6 +3,7 @@
 import ast
 import json
 import re
+import time
 from pathlib import Path
 from queue import Queue
 from typing import Any, Dict, List
@@ -31,27 +32,115 @@ class _GraderInfo:
 
 def get_all_grader_info() -> List[Dict[str, Any]]:
     """Collect the information of all graders defined under the openjudge/graders folder."""
+    t0 = time.time_ns()
     current_file_abs_path = Path(__file__).resolve()
     # print(f'current __file__:{__file__}')
     # print(f'current file abs path:{current_file_abs_path}')
 
-    # List[_GraderInfo]
-    graders_info = []
+    defs_of_classes_having_parent = {}
     unprocessed_folders = Queue()
     unprocessed_folders.put(Path(current_file_abs_path.parent.parent, "graders"))
-
     while not unprocessed_folders.empty():
         folder = unprocessed_folders.get()
         for item in folder.iterdir():
             if item.is_dir():
                 unprocessed_folders.put(item)
-            elif item.suffix == ".py":
-                graders_info.extend(_parse_grader(item))
+            elif item.stem == "__init__" or item.suffix != ".py":
+                # use heuristics to reduce candidate count
+                continue
+            else:
+                _get_defs_of_classes_having_parent(item, defs_of_classes_having_parent)
 
-    # print(f'{len(graders)} graders')
-    # for gi in graders:
-    #     print(str(gi))
-    return [gi.__dict__ for gi in graders_info]
+    t1 = time.time_ns()
+    print("------------------------------")
+    print(f"defs_of_classes_having_parent:{len(defs_of_classes_having_parent)}")
+    print(f"{(t1-t0)/1000000}ms")
+
+    all_grader_class_defs = _get_grader_class_def(defs_of_classes_having_parent)
+
+    t2 = time.time_ns()
+    all_grader_info = []
+    for _, (class_def, source_code) in all_grader_class_defs.items():
+        grader_info = _parse_grader_class_def(class_def, source_code)
+        all_grader_info.append(grader_info.__dict__)
+
+    t3 = time.time_ns()
+    print("------------------------------")
+    print(f"all_grader_info:{len(all_grader_info)}")
+    print(f"{(t3-t2)/1000000}ms")
+
+    return all_grader_info
+
+
+def _get_defs_of_classes_having_parent(py_file: Path, defs_of_classes_having_parent: Dict[ast.ClassDef, str]):
+    """Get the definitions and source codes of all classe that have parent class."""
+    # print(f'-----------------------\nparse py file:{py_file}')
+    # t0 = time.time_ns()
+    with open(py_file, "r", encoding="utf-8") as file:
+        source_code = file.read()
+
+    # Parse the source code into an AST node
+    # t1 = time.time_ns()
+    tree = ast.parse(source_code)
+    # t2 = time.time_ns()
+    for node in ast.walk(tree):
+        # print(f'---------------\nnode:{node}\n---------------')
+        if isinstance(node, ast.ClassDef) and node.bases:
+            parent_count = len(node.bases)
+            if parent_count > 1 or node.bases[0].id != "ABC":
+                # print(f'--------\nClassDef node with non-ABC parent:{node}\n---------')
+                defs_of_classes_having_parent[node] = source_code
+
+    # t3 = time.time_ns()
+    # print(f'----------')
+    # print(f'file:{py_file}')
+    # print(f'load: {(t1-t0)/100000}ms')
+    # print(f'ast.parse: {(t2-t1)/100000}ms')
+    # print(f'find sub classes: {(t3-t2)/100000}ms')
+
+
+def _get_grader_class_def(defs_of_classes_having_parent: Dict[ast.ClassDef, str]):
+    """Get the definitions of Grader classes"""
+    # get grader class def nodes
+    t1 = time.time_ns()
+    all_grader_class_defs = {"BaseGrader": None}
+    found_grader = True
+    while found_grader:
+        found_grader = False
+
+        known_defs = []
+        new_defs = []
+
+        for class_def, source_code in defs_of_classes_having_parent.items():
+            # print(f'checking {class_def.name}, parents:{[parent.id for parent in class_def.bases]}')
+            # Skip whose already processed
+            if class_def.name in all_grader_class_defs:
+                known_defs.append(class_def)
+                continue
+
+            for parent in class_def.bases:
+                if parent.id in all_grader_class_defs:
+                    all_grader_class_defs[class_def.name] = (class_def, source_code)
+                    new_defs.append(class_def)
+                    found_grader = True
+                break
+
+        # print(f'known_defs:{known_defs}')
+        # print(f'new_defs:{new_defs}')
+
+        # optimize data for the next round, by removing whose already processed in this round
+        for n in known_defs:
+            defs_of_classes_having_parent.pop(n)
+        for n in new_defs:
+            defs_of_classes_having_parent.pop(n)
+
+    all_grader_class_defs.pop("BaseGrader")
+
+    t2 = time.time_ns()
+    print("------------------------------")
+    print(f"all_grader_class_defs:{len(all_grader_class_defs)}")
+    print(f"{(t2-t1)/1000000}ms")
+    return all_grader_class_defs
 
 
 _INIT_METHOD = "__init__"
@@ -60,118 +149,87 @@ _TARGET_METHODS = set()
 _TARGET_METHODS.add(_INIT_METHOD)
 _TARGET_METHODS.add(_AEVALUATE_METHOD)
 
+_NEWLINE_OR_MULTI_SPACE_PATTERN = re.compile(r"(\n|\s\s+)")
 
-def _parse_grader(py_file: Path) -> List[_GraderInfo]:
+
+def _parse_grader_class_def(class_def: ast.ClassDef, source_code: str) -> _GraderInfo:
     """Use ast util to extract core information from a Grader class,
     and put the information into a _GraderInfo object."""
-    # print(f'-----------------------\nparse py file:{py_file}')
-    graders = []
-    with open(py_file, "r", encoding="utf-8") as file:
-        source_code = file.read()
 
-    # Parse the source code into an AST node
-    tree = ast.parse(source_code)
-    for node in ast.walk(tree):
-        # print(f'---------------\nnode:{node}\n---------------')
-        if not isinstance(node, ast.ClassDef):
-            # print(f'not a class, skipped')
-            continue
+    init_method = ""
+    aeval_method = ""
+    # Find target methods within the class body
+    for sub_node in class_def.body:
+        if isinstance(sub_node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            method_name = sub_node.name
+            if method_name not in _TARGET_METHODS:
+                continue
 
-        # print(f'---------------\nClassDef node:{node}\n---------------')
-        is_grader = False
-        for parent in node.bases:
-            if parent.id and parent.id.endswith("Grader"):
-                is_grader = True
-                break
+            # print(f'---------------\nFunctionDef node:{sub_node}\n---------------')
+            # print(f'method:{method_name}')
+            # print(f'method docstring:{ast.get_docstring(sub_node, clean=True)}')
+            # t0 = time.time_ns()
+            segment = ast.get_source_segment(source_code, sub_node)
+            # t1 = time.time_ns()
+            # print(f'method segment:||||{segment}||||')
+            segment = _NEWLINE_OR_MULTI_SPACE_PATTERN.sub(" ", segment.strip())
+            # t2 = time.time_ns()
+            segment = segment.replace(") :", "):").replace(") ->", ")->").replace(" :", ":")
+            # t3 = time.time_ns()
+            # print(f'----------')
+            # print(f'grader {class_def.name}')
+            # print(f'ast.get_source_segment: {(t1-t0)/100000}ms')
+            # print(f'segment re.sub: {(t2-t1)/100000}ms')
+            # print(f'segment replace: {(t3-t2)/100000}ms')
 
-        if not is_grader:
-            # print(f'--------\nnot a grader class, skipped----------')
-            continue
+            # Method head ends in two ways, w/ or w/o return type annocation.
+            # Figure it out.
+            idx0 = segment.find("):")
+            idx1 = segment.find(")->")
+            if idx1 > 0:
+                idx1 = segment.find(":", idx1)
 
-        # print(f'Grader Class:{node.name}')
-
-        parents = []
-        for parent in node.bases:
-            parents.append(parent.id)
-        # if parents:
-        #     if len(parents) == 1:
-        #         print(f'parent:{parents[0]}')
-        #     else:
-        #         print(f'parents:{parents}')
-        # else:
-        #     print(f'parent not found in bases:{node.bases}')
-
-        init_method = ""
-        aeval_method = ""
-        # Find target methods within the class body
-        for sub_node in node.body:
-            if isinstance(sub_node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                method_name = sub_node.name
-                if method_name not in _TARGET_METHODS:
-                    continue
-
-                # print(f'---------------\nFunctionDef node:{sub_node}\n---------------')
-                # print(f'method:{method_name}')
-                # for arg in sub_node.args.args:
-                #     print(f'args.arg:{arg.arg}')
-                # for arg in sub_node.args.posonlyargs:
-                #     print(f'args.posonlyarg:{arg.arg}')
-                # for arg in sub_node.args.kwonlyargs:
-                #     print(f'args.kwonlyarg:{arg.arg}')
-                # print(f'args.vararg:{sub_node.args.vararg.arg if sub_node.args.vararg else None}')
-                # print(f'args.kwarg:{sub_node.args.kwarg.arg if sub_node.args.kwarg else None}')
-                # print(f'method docstring:{ast.get_docstring(sub_node, clean=True)}')
-                segment = ast.get_source_segment(source_code, sub_node)
-                # print(f'method segment:||||{segment}||||')
-                segment = re.sub(r"(\n|\s\s+)", " ", segment.strip())
-                segment = segment.replace(") :", "):").replace(") ->", ")->").replace(" :", ":")
-                # Method head ends in two ways, w/ or w/o return type annocation.
-                # Figure it out.
-                idx0 = segment.find("):")
-                idx1 = segment.find(")->")
-                if idx1 > 0:
-                    idx1 = segment.find(":", idx1)
-
-                if idx0 > 0 and idx1 > 0:
-                    if idx0 < idx1:
-                        idx = idx0 + 2
-                    else:
-                        idx = idx1 + 1
-                elif idx0 > 0:
+            if idx0 > 0 and idx1 > 0:
+                if idx0 < idx1:
                     idx = idx0 + 2
-                elif idx1 > 0:
+                else:
                     idx = idx1 + 1
-                else:
-                    idx = -1
+            elif idx0 > 0:
+                idx = idx0 + 2
+            elif idx1 > 0:
+                idx = idx1 + 1
+            else:
+                idx = -1
 
-                # def foo(...) -> type:
-                # def foo(...):
-                if idx > 0:
-                    signature = segment[0:idx]
-                else:
-                    signature = "SIGNATURE_NOT_FOUND"
+            # def foo(...) -> type:
+            # def foo(...):
+            if idx > 0:
+                signature = segment[0:idx]
+            else:
+                signature = "SIGNATURE_NOT_FOUND"
 
-                if method_name == _INIT_METHOD:
-                    init_method = signature
-                elif method_name == _AEVALUATE_METHOD:
-                    aeval_method = signature
-                # print(f'method signature:||||{signature}||||\n')
+            if method_name == _INIT_METHOD:
+                init_method = signature
+            elif method_name == _AEVALUATE_METHOD:
+                aeval_method = signature
+            # print(f'method signature:||||{signature}||||\n')
 
-        graders.append(
-            _GraderInfo(
-                file_path=str(py_file),
-                class_name=node.name,
-                parent_class_names=parents,
-                init_method=init_method,
-                aevaluate_method=aeval_method,
-            )
-        )
-
-    return graders
+    # t0 = time.time_ns()
+    grader_info_obj = _GraderInfo(
+        class_name=class_def.name,
+        parent_class_names=[p.id for p in class_def.bases],
+        init_method=init_method,
+        aevaluate_method=aeval_method,
+    )
+    # t1 = time.time_ns()
+    # print(f'to _GraderInfo obj: {(t1-t0)/100000}ms')
+    return grader_info_obj
 
 
 if __name__ == "__main__":
-    all_grader_info = get_all_grader_info()
-    for grader_info in all_grader_info:
+    graders = get_all_grader_info()
+    print("-------------")
+    print(f"{len(graders)} graders")
+    for g_i in graders:
         print("-------------")
-        print(grader_info)
+        print(g_i)

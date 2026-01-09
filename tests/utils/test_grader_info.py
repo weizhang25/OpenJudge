@@ -21,7 +21,6 @@ class TestGraderInfoUtil:
 
         assert len(all_grader_info) > 0, all_grader_info
         for gi in all_grader_info:
-            assert len(gi.get("file_path")) > 0, gi
             assert len(gi.get("class_name")) > 0, gi
             assert len(gi.get("parent_class_names")) > 0, gi
             assert isinstance(gi.get("parent_class_names"), list), gi
