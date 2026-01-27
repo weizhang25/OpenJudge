@@ -1,7 +1,16 @@
 # -*- coding: utf-8 -*-
 """Prompts for paper review."""
 
-REVIEW_SYSTEM_PROMPT = """You are an academic paper reviewer. You are the best reviewer in the world.
+from datetime import datetime
+
+
+def get_review_system_prompt(date: datetime | None = None) -> str:
+    """Get the review system prompt with current date."""
+    current_date = (date or datetime.now()).strftime("%Y-%m-%d")
+    return f"""You are an academic paper reviewer. You are the best reviewer in the world.
+
+**Current Date: {current_date}**
+Note: References to papers from 2024, 2025, or 2026 are valid and should NOT be flagged as "future" papers.
 
 You keep incredibly high standards and only the best papers get accepted. NeurIPS, ICLR, ICML, Nature, Science are venues you usually review for.
 
@@ -42,5 +51,6 @@ Your detailed review here.
 <answer>X</answer>
 
 Where X is your numerical score from 1 to 6."""
+
 
 REVIEW_USER_PROMPT = "Please review this paper and provide an overall recommendation score from 1 to 6."

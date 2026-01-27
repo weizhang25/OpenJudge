@@ -5,8 +5,8 @@ import re
 from typing import List
 
 from cookbooks.paper_review.prompts.review import (
-    REVIEW_SYSTEM_PROMPT,
     REVIEW_USER_PROMPT,
+    get_review_system_prompt,
 )
 from cookbooks.paper_review.utils import extract_response_content
 from openjudge.graders.base_grader import GraderError, GraderMode, GraderScore
@@ -20,7 +20,17 @@ def parse_review_response(text: str) -> dict:
     answer_match = re.search(r"<answer>\s*(\d+)\s*</answer>", text)
 
     review = review_match.group(1).strip() if review_match else text
-    score = int(answer_match.group(1)) if answer_match else 3
+
+    if answer_match:
+        score = int(answer_match.group(1))
+    else:
+        # 备用：尝试从文本中提取分数（当模型未按格式输出 <answer> 标签时）
+        fallback_match = re.search(
+            r"(?:Overall\s+)?(?:Recommendation\s+)?Score[:\s]*(\d)\s*/\s*6",
+            text,
+            re.IGNORECASE,
+        )
+        score = int(fallback_match.group(1)) if fallback_match else 3
 
     return {"score": score, "review": review}
 
@@ -28,7 +38,7 @@ def parse_review_response(text: str) -> dict:
 def build_review_messages(pdf_data: str) -> List[dict]:
     """Build messages with PDF data properly injected."""
     return [
-        {"role": "system", "content": REVIEW_SYSTEM_PROMPT},
+        {"role": "system", "content": get_review_system_prompt()},
         {
             "role": "user",
             "content": [
@@ -57,7 +67,7 @@ class ReviewGrader(LLMGrader):
             mode=GraderMode.POINTWISE,
             description="Comprehensive paper review with recommendation score",
             model=model,
-            template=REVIEW_SYSTEM_PROMPT,  # Placeholder, not used
+            template="",  # Placeholder, not used
         )
 
     async def aevaluate(self, pdf_data: str) -> GraderScore:
